@@ -1,0 +1,1 @@
+{"AccessToken":"INSERT_YOUR_ACCESS_TOKEN_HERE","MemoryCacheSize":500,"FileCacheSize":25000,"DefaultTimeout":30,"AutoRefreshCache":false}
