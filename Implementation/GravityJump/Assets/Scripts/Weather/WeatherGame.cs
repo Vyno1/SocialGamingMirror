@@ -11,7 +11,7 @@ public class WeatherGame : MonoBehaviour
   public float updateDistanceInMeters = 500f;
   public int serviceInitWaitTimeInSeconds = 15;
   public string weatherUrl = "api.openweathermap.org/data/2.5/weather?lat={0}&lon={1}&appid={2}&units={3}";
-  public string weatherApiKey = "213ce8559192136a6e2e061ec27a87c5";
+  public string weatherApiKey = "PASTE_KEY_HERE";
   public string weatherUnits = "metric";
 
   float latitude = 0f;

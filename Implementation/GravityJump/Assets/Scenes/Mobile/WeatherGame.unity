@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44402242, g: 0.49316543, b: 0.5722324, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -359,7 +359,7 @@ MonoBehaviour:
   updateDistanceInMeters: 500
   serviceInitWaitTimeInSeconds: 15
   weatherUrl: api.openweathermap.org/data/2.5/weather?lat={0}&lon={1}&appid={2}&units={3}
-  weatherApiKey: 213ce8559192136a6e2e061ec27a87c5
+  weatherApiKey: PASTE_KEY_HERE
   weatherUnits: metric
 --- !u!1 &345268546
 GameObject:

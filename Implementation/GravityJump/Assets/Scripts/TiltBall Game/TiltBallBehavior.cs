@@ -35,15 +35,13 @@ public class TiltBallBehavior : MonoBehaviour
       StartCoroutine(PassBall());
       return;
     }
-    
+
 #if UNITY_EDITOR
-    input = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0);
-#elif UNITY_STANDALONE_WIN
     input = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0);
 #else
     input = new Vector3(Input.acceleration.x, Input.acceleration.y, 0);
 #endif
-    
+
     force = input * input_strength;
     m_Rigidbody.velocity += force * Time.fixedDeltaTime;
   }
