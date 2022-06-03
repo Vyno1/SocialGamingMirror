@@ -260,9 +260,9 @@ def pass_ball(request):
         return HttpResponse(f'no match with host {host_name} exists')
 
     host.match.host_has_ball = host_has_ball
-    host.match.position = position
-    host.match.velocity_x = velocity_x
-    host.match.velocity_y = velocity_y
+    host.match.position = float(position.replace(',','.'))
+    host.match.velocity_x = float(velocity_x.replace(',','.'))
+    host.match.velocity_y = float(velocity_y.replace(',','.'))
     host.match.save()
     return HttpResponse(f'0: passed ball')
 

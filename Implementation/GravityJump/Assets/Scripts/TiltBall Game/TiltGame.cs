@@ -116,7 +116,7 @@ public class TiltGame : MonoBehaviour
   void SpawnBall(string wwwText)
   {
     var splitText = wwwText.Split();
-    float xPos = float.Parse(splitText[1]);
+    float xPos = 0.0f;
     float xVel = float.Parse(splitText[2]);
     float yVel = -float.Parse(splitText[3]);
     ball = Instantiate(ballPrefab, new Vector3(xPos, ballSpawnHeight, 0), Quaternion.identity);
