@@ -97,6 +97,7 @@ def get_friends(request):
     return HttpResponse(response)
 
 
+# TODO MAXI
 def add_friend(request):
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
@@ -114,33 +115,29 @@ def add_friend(request):
     # the get function.
     friend = Player.objects.get(user__username=name)
 
-    # This line creates that friendship and immediately saves it
+    # !! Es gibt hier keine Follower, nur Friends - Wenn dich jemand added, ist er auch automatisch dein Freund !!
     Friendship(player=player, friend=friend).save()
-    update_all_friendship_levels()
+    Friendship(player=friend, friend=player).save()
 
     response = f'0: {request.user.username} befriended {name}'
     return HttpResponse(response)
 
 
+# TODO MAXI
+# TODO Methode wird gecalled, wenn 2 Spieler zusammen ein Level abgeschlossen haben
 def update_friendship_level(friendship):
     # This function basically counts mutual friends. Don't worry about the
     # specifics, just write your own code for whatever network calculations
     # you want to include in your game. If you are lost, the Django
     # documentation is very helpful.
-    level = 0
-    for f in friendship.player.friends.all():
-        level += f.friend.followers.filter(player=friendship.friend).count()
-    friendship.level = level
-    friendship.save()
 
-
-def update_all_friendship_levels():
-    for friendship in Friendship.objects.all():
-        update_friendship_level(friendship)
+    # Momentan kann man nur 100 level haben, dann Skin :)
+    if friendship.level < 101:
+        friendship.level += 1
+        friendship.save()
 
 
 # LEADERBOARD: get_scores, edit_score
-
 def get_scores(request):
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')

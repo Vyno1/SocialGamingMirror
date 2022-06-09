@@ -53,6 +53,7 @@ class Friendship(models.Model):
         on_delete=models.CASCADE,
         related_name='friends',
     )
+    # Das kann eigentlich raus, außer wir wollen Follower doch erlauben. Momentan ist man "gdw" befreundet
     friend = models.ForeignKey(
         Player,
         on_delete=models.CASCADE,
