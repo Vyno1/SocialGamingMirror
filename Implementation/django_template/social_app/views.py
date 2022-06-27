@@ -10,6 +10,7 @@ from django.contrib.auth import logout
 # If this file becomes too large it is recommended to split it up into
 # multiple files. This file is not special, just make sure that the correct
 # file and view function is linked to the correct URL in urls.py.
+# TODO: @team make own source files and reference the methods in urls.py
 
 
 # ------------------------------------------------{Login Stuff}-------------------------------------------------------#
@@ -66,6 +67,7 @@ def signup(request):
     # Don't forget to save at the end of all the changes to table contents
     player.save()
     return HttpResponse('0: successful signup')
+
 
 # ----------------------------------------------{Friendship Stuff}----------------------------------------------------#
 
@@ -199,7 +201,7 @@ def edit_score(request):
 
 # ------------------------------------------------{Match Stuff}-------------------------------------------------------#
 
-# TILTBALL: host_match, join_match, get_match, pass_ball, end_match
+# TILTBALL: host_match, join_match, get_match, end_match
 
 def host_match(request):
     if not request.user.is_authenticated:
@@ -284,6 +286,5 @@ def end_match(request):
     host.match.is_over = True
     host.match.save()
     return HttpResponse(f'0: ended match')
-
 
 # ----------------------------------------------------{EOF}-----------------------------------------------------------#

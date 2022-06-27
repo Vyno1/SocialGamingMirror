@@ -1,11 +1,14 @@
 from django.urls import path
 
 from . import views
+# @Kerstin imports
+from . import pause, weather
+# TODO: @team add your source files here
 
-# More complex URL-patterns can be found in the Django documentation,
-# but since these URLs will be accessed by the client automatically rather
-# than a user, they can be kept very straightforward.
 urlpatterns = [
+    #
+    # ---------------------------------------------{Template Stuff}----------------------------------------------------#
+    #  [source: views.py]
     path('signup/', views.signup),
     path('login/', views.signin),
     path('logout/', views.signout),
@@ -18,6 +21,11 @@ urlpatterns = [
     path('get_match/', views.get_match),
     path('host_match/', views.host_match),
     path('join_match/', views.join_match),
-    path('pass_ball/', views.pass_ball),
+    # @Kerstin removed pass_ball/
     path('end_match/', views.end_match),
+
+    # TODO: @team add your paths here
+    # syntax: path(url, method)
+
+
 ]

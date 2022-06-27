@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+# TODO: @team add your attributes and databases here
+
 # A user consists mainly of a username and a password.
 # A player is just a user with a points score.
 class Player(models.Model):
@@ -12,12 +14,14 @@ class Player(models.Model):
     )
     score = models.IntegerField(default=0)
     show_friend_info_screen: bool = models.BooleanField(default=True)
+    # @Kerstin added steps
+    steps = models.IntegerField(default=0)
 
     def __str__(self):
         return self.user.username
 
 
-# This represents a 2-player match of TiltBall
+# This represents a 2-player match of GravityJump
 class Match(models.Model):
     # The host is mostly used as an identifier so that players can find the
     # match they have hosted or joined.
@@ -25,13 +29,7 @@ class Match(models.Model):
         Player,
         on_delete=models.CASCADE,
     )
-    # The TiltBall match goes through these phases: First all these values
-    # are false. Then the game starts, so has_started is true. Then the
-    # guest passes the ball to the host, so host_has_ball is True.
-    # host_has_ball switches from True to False over and over as the players
-    # pass the ball between each other, until the ball hits an obstacle and
-    # the game ends, at which point is_over is True.
-    host_has_ball = models.BooleanField(default=False)
+    # @Kerstin removed has_ball field
     has_started = models.BooleanField(default=False)
     is_over = models.BooleanField(default=False)
     # The x value of the ball's position as it passes between players
@@ -41,6 +39,10 @@ class Match(models.Model):
         default=0, max_digits=30, decimal_places=20)
     velocity_y = models.DecimalField(
         default=0, max_digits=30, decimal_places=20)
+    # @Kerstin pause menu fields
+    is_paused = models.BooleanField(default=False)
+    do_reset = models.BooleanField(default=False)
+    do_exit = models.BooleanField(default=False)
 
 
 class Friendship(models.Model):
@@ -61,13 +63,7 @@ class Friendship(models.Model):
     )
     level = models.IntegerField(default=0)
 
-    # The addition of this class ensures that 2 players cannot befriend each
-    # other more than once, but it is still possible for a player to
-    # befriend any number of different players and for that player to be
-    # befriended by any number of different players. If you prefer
-    # friendships always being symmetric, i.e. if player A is the friend
-    # of player B, player B is automatically the friend of player A,
-    # this can also be done.
+    # prohibit multiple instances of the same friendship
     class Meta:
         unique_together = ('player', 'friend')
 
