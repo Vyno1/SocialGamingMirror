@@ -11,6 +11,7 @@ class Player(models.Model):
         primary_key=True,
     )
     score = models.IntegerField(default=0)
+    show_friend_info_screen: bool = models.BooleanField(default=True)
 
     def __str__(self):
         return self.user.username
@@ -53,7 +54,6 @@ class Friendship(models.Model):
         on_delete=models.CASCADE,
         related_name='friends',
     )
-    # Das kann eigentlich raus, außer wir wollen Follower doch erlauben. Momentan ist man "gdw" befreundet
     friend = models.ForeignKey(
         Player,
         on_delete=models.CASCADE,

@@ -12,7 +12,9 @@ from django.contrib.auth import logout
 # file and view function is linked to the correct URL in urls.py.
 
 
+# ------------------------------------------------{Login Stuff}-------------------------------------------------------#
 # USER AUTHENTICATION: check_auth, signout, signin, signup
+
 
 def check_auth(request):
     if request.user.is_authenticated:
@@ -65,11 +67,14 @@ def signup(request):
     player.save()
     return HttpResponse('0: successful signup')
 
+# ----------------------------------------------{Friendship Stuff}----------------------------------------------------#
 
 # FRIENDS LIST:
 # view functions: get_names, get_friends, add_friend,
 # helper functions: update_friendship_level, update_all_friendship_levels
 
+
+# @Maxi (hab nix geändert)
 def get_names(request):
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
@@ -80,6 +85,7 @@ def get_names(request):
     return HttpResponse(response)
 
 
+# @Maxi (hab nix geändert)
 def get_friends(request):
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
@@ -97,7 +103,24 @@ def get_friends(request):
     return HttpResponse(response)
 
 
-# TODO MAXI
+# @Maxi
+def get_followers(request):
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
+    if not hasattr(request.user, 'player'):
+        return HttpResponse(f'user is not a player')
+    response = '0: '
+    player = request.user.player
+    for friendship in Friendship.objects.all():
+        if player == friendship.friend:
+            response += f'{friendship.friend.user.username}' \
+                        f' {friendship.friend.level},'
+            # This just removes the trailing comma left by the above iteration
+            response = response[:-1]
+    return HttpResponse(response) if response != '0: ' else HttpResponse('1: No Followers')
+
+
+# @Maxi (hab nix geändert)
 def add_friend(request):
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
@@ -114,27 +137,34 @@ def add_friend(request):
     # user.username in regular code becomes the user__username parameter of
     # the get function.
     friend = Player.objects.get(user__username=name)
-
-    # !! Es gibt hier keine Follower, nur Friends - Wenn dich jemand added, ist er auch automatisch dein Freund !!
     Friendship(player=player, friend=friend).save()
-    Friendship(player=friend, friend=player).save()
 
     response = f'0: {request.user.username} befriended {name}'
     return HttpResponse(response)
 
 
-# TODO MAXI
-# TODO Methode wird gecalled, wenn 2 Spieler zusammen ein Level abgeschlossen haben
+# @Maxi
 def update_friendship_level(friendship):
-    # This function basically counts mutual friends. Don't worry about the
-    # specifics, just write your own code for whatever network calculations
-    # you want to include in your game. If you are lost, the Django
-    # documentation is very helpful.
-
     # Momentan kann man nur 100 level haben, dann Skin :)
     if friendship.level < 101:
         friendship.level += 1
         friendship.save()
+
+
+# @Maxi
+def disable_friend_info(request):
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
+    if request.method != 'POST':
+        return HttpResponse(f'incorrect request method.')
+    player_name = request.POST['player']
+    player = Player.objects.get(user__username=player_name)
+    player.show_friend_info_screen = False
+    player.save()
+    return HttpResponse(f'0: friend-info screen disabled.')
+
+
+# ---------------------------------------------{Leaderboard Stuff}----------------------------------------------------#
 
 
 # LEADERBOARD: get_scores, edit_score
@@ -166,6 +196,8 @@ def edit_score(request):
     response = f'0: changed the score of {request.user.username} to {score}'
     return HttpResponse(response)
 
+
+# ------------------------------------------------{Match Stuff}-------------------------------------------------------#
 
 # TILTBALL: host_match, join_match, get_match, pass_ball, end_match
 
@@ -240,30 +272,6 @@ def get_match(request):
         return HttpResponse(f'1: {match_ball}')
 
 
-def pass_ball(request):
-    if not request.user.is_authenticated:
-        return HttpResponse(f'user not signed in')
-    if request.method != 'POST':
-        return HttpResponse(f'incorrect request method.')
-
-    host_name = request.POST['host']
-    host_has_ball = request.POST['host_has_ball'] == "true"
-    position = request.POST['position']
-    velocity_x = request.POST['velocity_x']
-    velocity_y = request.POST['velocity_y']
-
-    host = Player.objects.get(user__username=host_name)
-    if not hasattr(host, 'match'):
-        return HttpResponse(f'no match with host {host_name} exists')
-
-    host.match.host_has_ball = host_has_ball
-    host.match.position = float(position.replace(",","."))
-    host.match.velocity_x = float(velocity_x.replace(",","."))
-    host.match.velocity_y = float(velocity_y.replace(",","."))
-    host.match.save()
-    return HttpResponse(f'0: passed ball')
-
-
 def end_match(request):
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
@@ -276,3 +284,6 @@ def end_match(request):
     host.match.is_over = True
     host.match.save()
     return HttpResponse(f'0: ended match')
+
+
+# ----------------------------------------------------{EOF}-----------------------------------------------------------#
