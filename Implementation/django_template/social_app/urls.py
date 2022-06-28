@@ -27,20 +27,5 @@ urlpatterns = [
     # TODO: @team add your paths here
     # syntax: path(url, method)
 
-    #
-    # --------------------------------------------{Pause Menu Stuff}---------------------------------------------------#
-    #  @Kerstin urls for pause menu [source: pause.py]
-    path('pause_game/', pause.pause_game),
-    path('get_paused/', pause.get_paused),
-    path('resume_game/', pause.resume_game),
-    path('request_reset/', pause.request_reset),
-    path('reset_level/', pause.reset_level),
-    path('clear_reset/', pause.clear_reset),
-    path('request_exit/', pause.request_exit),
-    path('exit_level/', pause.exit_level),
-    path('pause_menu_show_friends/', pause.pause_menu_show_friends),
 
-    #
-    # ----------------------------------------------{Weather Stuff}----------------------------------------------------#
-    #  @Kerstin urls for weather stuff [source: weather.py]
 ]
