@@ -29,6 +29,11 @@ class Match(models.Model):
         Player,
         on_delete=models.CASCADE,
     )
+
+    joined_player = models.OneToOneField(
+        Player,
+        on_delete=models.CASCADE,
+    )
     # @Kerstin removed has_ball field
     has_started = models.BooleanField(default=False)
     is_over = models.BooleanField(default=False)
