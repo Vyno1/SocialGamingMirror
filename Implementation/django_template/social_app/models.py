@@ -17,6 +17,24 @@ class Player(models.Model):
     # @Kerstin added steps
     steps = models.IntegerField(default=0)
 
+    # @Kerstin weather fields (IN PLAYER CLASS)
+    # choices is django's equivalent of enums
+    class WeatherState(models.TextChoices):
+        sun = 'sun'
+        rain = 'rain'
+        wind = 'wind'
+        thunder = 'thunder'
+        snow = 'snow'
+        none = 'none'
+
+    # TODO: turn into array
+    token0 = models.CharField(choices=WeatherState.choices, default=WeatherState.none)
+    token1 = models.CharField(choices=WeatherState.choices, default=WeatherState.none)
+    token2 = models.CharField(choices=WeatherState.choices, default=WeatherState.none)
+    token3 = models.CharField(choices=WeatherState.choices, default=WeatherState.none)
+    token4 = models.CharField(choices=WeatherState.choices, default=WeatherState.none)
+    friend_token = models.CharField(choices=WeatherState.choices, default=WeatherState.none)
+
     def __str__(self):
         return self.user.username
 
@@ -26,6 +44,11 @@ class Match(models.Model):
     # The host is mostly used as an identifier so that players can find the
     # match they have hosted or joined.
     host = models.OneToOneField(
+        Player,
+        on_delete=models.CASCADE,
+    )
+
+    joined_player = models.OneToOneField(
         Player,
         on_delete=models.CASCADE,
     )
