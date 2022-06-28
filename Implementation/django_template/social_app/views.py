@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from .models import Player, Friendship, Match
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import ObjectDoesNotExist
 
 from django.contrib.auth import logout
 
@@ -122,7 +123,7 @@ def get_followers(request):
     return HttpResponse(response) if response != '0: ' else HttpResponse('1: No Followers')
 
 
-# @Maxi (hab nix geändert)
+# @Maxi
 def add_friend(request):
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
@@ -131,17 +132,23 @@ def add_friend(request):
     if not hasattr(request.user, 'player'):
         return HttpResponse(f'user is not a player')
 
+    player_name = request.user.username
     player = request.user.player
-    name = request.POST['name']
-    # Keyword attributes are very powerful. Look at the Django documentation
-    # for more details. This line fetches the player that has a user that
-    # has a username that equals name. The __ is equivalent to a dot.
-    # user.username in regular code becomes the user__username parameter of
-    # the get function.
-    friend = Player.objects.get(user__username=name)
-    Friendship(player=player, friend=friend).save()
+    friend_name = request.POST['name']
+    friend = Player.objects.get(user__username=friend_name)
 
-    response = f'0: {request.user.username} befriended {name}'
+    response = f'0: friendship {player_name} -> {friend_name}'
+
+    try:
+        friendship = Friendship.objects.get(player=friend, friend=player)
+        friendship.mutual = True
+        response += ", their friendship is now mutual"
+    except ObjectDoesNotExist:
+        response += f", no friendship {friend_name} -> {player_name}"
+        Friendship(player=player, friend=friend).save()
+    except Exception:
+        response += f", something went wrong, nothing changed."
+
     return HttpResponse(response)
 
 
