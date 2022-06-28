@@ -173,6 +173,14 @@ def disable_friend_info(request):
     return HttpResponse(f'0: friend-info screen disabled.')
 
 
+def get_friend_info_bool(request):
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
+    if request.method != 'POST':
+        return HttpResponse(f'incorrect request method.')
+    return HttpResponse(f'0: {request.user.player.show_friend_info_screen}')
+
+
 # ---------------------------------------------{Leaderboard Stuff}----------------------------------------------------#
 
 

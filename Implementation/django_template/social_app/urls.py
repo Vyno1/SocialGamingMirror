@@ -26,6 +26,7 @@ urlpatterns = [
     # @Maxi added:
     path('get_followers/', views.get_followers),
     path('disable_friend_info/', views.disable_friend_info),
+    path('get_friend_info_bool/', views.get_friend_info_bool),
 
     # TODO: @team add your paths here
     # syntax: path(url, method)
