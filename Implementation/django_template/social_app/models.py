@@ -62,6 +62,7 @@ class Friendship(models.Model):
         related_name='followers',
     )
     level = models.IntegerField(default=0)
+    mutual = models.BooleanField(default=False)
 
     # prohibit multiple instances of the same friendship
     class Meta:

@@ -23,6 +23,9 @@ urlpatterns = [
     path('join_match/', views.join_match),
     # @Kerstin removed pass_ball/
     path('end_match/', views.end_match),
+    # @Maxi added:
+    path('get_followers/', views.get_followers),
+    path('disable_friend_info/', views.disable_friend_info),
 
     # TODO: @team add your paths here
     # syntax: path(url, method)
