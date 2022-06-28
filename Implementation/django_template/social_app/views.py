@@ -164,10 +164,9 @@ def update_friendship_level(friendship):
 def disable_friend_info(request):
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
-    if request.method != 'POST':
+    if request.method != 'GET':
         return HttpResponse(f'incorrect request method.')
-    player_name = request.POST['player']
-    player = Player.objects.get(user__username=player_name)
+    player = request.user.player
     player.show_friend_info_screen = False
     player.save()
     return HttpResponse(f'0: friend-info screen disabled.')
@@ -176,7 +175,7 @@ def disable_friend_info(request):
 def get_friend_info_bool(request):
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
-    if request.method != 'POST':
+    if request.method != 'GET':
         return HttpResponse(f'incorrect request method.')
     return HttpResponse(f'0: {request.user.player.show_friend_info_screen}')
 
