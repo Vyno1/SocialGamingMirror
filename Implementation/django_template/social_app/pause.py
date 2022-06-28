@@ -22,7 +22,8 @@ def get_match(request):
     if not hasattr(request.user, 'player'):
         return HttpResponse(not_a_player_message)
 
-    player = request.user.player
+    player: Player = request.user.player
+    # TODO: checken, ob player in Match reicht, damit der hier auch gefunden wird
     if not hasattr(player, 'match'):
         return HttpResponse(no_match_message)
 
@@ -59,18 +60,41 @@ def resume_game(request):
 
 
 def pause_menu_show_friends(request):
+    # TODO: mit maxi machen
     return
 
 
-def reset_level(request):
-    return
+def request_reset(request):
+    match: Match = get_match(request)
+    if match.do_reset:
+        return HttpResponse('1: reset already requested')
+
+    match.do_reset = True
+    return HttpResponse(success_message)
 
 
 def clear_reset(request):
+    match: Match = get_match(request)
+    # resetting false to false won't be a problem so no error to be thrown here
+    match.do_reset = False
+    return HttpResponse(success_message)
+
+
+def reset_level(request):
+    # TODO: reset all match variables (Steps, positions, etc)
+    # TODO: store initial values -> vyno fragen
     return
+
+
+def request_exit(request):
+    match: Match = get_match(request)
+    if match.do_exit:
+        return HttpResponse('1: exit already requested')
+
+    match.do_reset = True
+    return HttpResponse(success_message)
 
 
 def exit_level(request):
+    # TODO: ka
     return
-
-# ...
