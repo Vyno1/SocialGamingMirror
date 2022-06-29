@@ -43,6 +43,7 @@ urlpatterns = [
     path('request_exit/', pause.request_exit),
     path('exit_level/', pause.exit_level),
     path('pause_menu_show_friends/', pause.pause_menu_show_friends),
+    # ...
 
     #
     # ----------------------------------------------{Weather Stuff}----------------------------------------------------#
