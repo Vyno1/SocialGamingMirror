@@ -29,7 +29,7 @@ class Match(models.Model):
         Player,
         on_delete=models.CASCADE,
     )
-    # @Kerstin removed has_ball field
+    # @Kerstin removed has_ball
     has_started = models.BooleanField(default=False)
     is_over = models.BooleanField(default=False)
     # The x value of the ball's position as it passes between players
