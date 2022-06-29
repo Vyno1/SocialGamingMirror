@@ -3,6 +3,7 @@ from django.urls import path
 from . import views
 # @Kerstin imports
 from . import pause, weather
+from . import friends
 # TODO: @team add your source files here
 
 urlpatterns = [
@@ -15,21 +16,21 @@ urlpatterns = [
     path('check_auth/', views.check_auth),
     path('get_scores/', views.get_scores),
     path('edit_score/', views.edit_score),
-    path('get_friends/', views.get_friends),
-    path('get_names/', views.get_names),
-    path('add_friend/', views.add_friend),
     path('get_match/', views.get_match),
     path('host_match/', views.host_match),
     path('join_match/', views.join_match),
-    # @Kerstin removed pass_ball/
     path('end_match/', views.end_match),
-    # @Maxi added:
-    path('get_followers/', views.get_followers),
-    path('disable_friend_info/', views.disable_friend_info),
-    path('get_friend_info_bool/', views.get_friend_info_bool),
 
-    # TODO: @team add your paths here
-    # syntax: path(url, method)
+    #
+    # --------------------------------------------{Friendship Stuff}---------------------------------------------------#
+    #  @Maxi urls for friendship [source: friends.py]
+    path('get_friends/', friends.get_friends),
+    path('get_names/', friends.get_names),
+    path('add_friend/', friends.add_friend),
+    path('get_followers/', friends.get_followers),
+    path('disable_friend_info/', friends.disable_friend_info),
+    path('get_friend_info_bool/', friends.get_friend_info_bool),
+
 
     #
     # --------------------------------------------{Pause Menu Stuff}---------------------------------------------------#
@@ -48,4 +49,6 @@ urlpatterns = [
     #
     # ----------------------------------------------{Weather Stuff}----------------------------------------------------#
     #  @Kerstin urls for weather stuff [source: weather.py]
+
+    # TODO: @team add your paths here
 ]
