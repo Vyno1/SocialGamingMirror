@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from .models import Player, Friendship, Match
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import ObjectDoesNotExist
 
 from django.contrib.auth import logout
 
@@ -71,9 +72,11 @@ def signup(request):
 
 # ----------------------------------------------{Friendship Stuff}----------------------------------------------------#
 
-# FRIENDS LIST:
-# view functions: get_names, get_friends, add_friend,
-# helper functions: update_friendship_level, update_all_friendship_levels
+# view functions:
+# get_names, get_friends, get_followers, add_friend, update_friendship_level, disable_friend_info, get_friend_info_bool,
+#
+# helper functions:
+# test_get_issues
 
 
 # @Maxi (hab nix geändert)
@@ -117,12 +120,11 @@ def get_followers(request):
         if player == friendship.friend:
             response += f'{friendship.friend.user.username}' \
                         f' {friendship.friend.level},'
-            # This just removes the trailing comma left by the above iteration
             response = response[:-1]
     return HttpResponse(response) if response != '0: ' else HttpResponse('1: No Followers')
 
 
-# @Maxi (hab nix geändert)
+# @Maxi
 def add_friend(request):
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
@@ -131,40 +133,99 @@ def add_friend(request):
     if not hasattr(request.user, 'player'):
         return HttpResponse(f'user is not a player')
 
+    player_name = request.user.username
     player = request.user.player
-    name = request.POST['name']
-    # Keyword attributes are very powerful. Look at the Django documentation
-    # for more details. This line fetches the player that has a user that
-    # has a username that equals name. The __ is equivalent to a dot.
-    # user.username in regular code becomes the user__username parameter of
-    # the get function.
-    friend = Player.objects.get(user__username=name)
-    Friendship(player=player, friend=friend).save()
+    friend_name = request.POST['name']
+    friend = Player.objects.get(user__username=friend_name)
 
-    response = f'0: {request.user.username} befriended {name}'
+    response = f'0: friendship {player_name} -> {friend_name}'
+
+    try:
+        friendship = Friendship.objects.get(player=friend, friend=player)
+        friendship.mutual = True
+        response += ", their friendship is now mutual"
+    except ObjectDoesNotExist:
+        response += f", no friendship {friend_name} -> {player_name}"
+        Friendship(player=player, friend=friend).save()
+    except Exception as e:
+        print(e)
+        response += f", something went wrong, nothing changed."
+
     return HttpResponse(response)
 
 
 # @Maxi
-def update_friendship_level(friendship):
-    # Momentan kann man nur 100 level haben, dann Skin :)
-    if friendship.level < 101:
-        friendship.level += 1
-        friendship.save()
+def update_friendship_level(request):
+    if not hasattr(request.user, 'player'):
+        return HttpResponse(f'user is not a player')
+    try:
+        friend = Player.objects.get(user__username=request.POST['friend_name'])
+        friendship = Friendship.objects.get(player=request.user.player, friend=friend)
+        if friendship.level < 101:
+            friendship.level += 1
+            friendship.skin1_unlocked = True if friendship.level == 5 else False
+            friendship.skin2_unlocked = True if friendship.level == 10 else False
+            friendship.save()
+        return HttpResponse("0: Updated friendship level successfully")
+    except Exception as e:
+        print(e)
+        return HttpResponse("Something went wrong while updating friendship level")
 
 
 # @Maxi
 def disable_friend_info(request):
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
-    if request.method != 'POST':
+    if request.method != 'GET':
         return HttpResponse(f'incorrect request method.')
-    player_name = request.POST['player']
-    player = Player.objects.get(user__username=player_name)
+    if not hasattr(request.user, 'player'):
+        return HttpResponse(f'user is not a player')
+    player = request.user.player
     player.show_friend_info_screen = False
     player.save()
     return HttpResponse(f'0: friend-info screen disabled.')
 
+
+# @Maxi
+def get_friend_info_bool(request):
+    no_issues = test_get_issues(request)
+    return no_issues \
+        if isinstance(no_issues, HttpResponse) \
+        else HttpResponse(f'0: {request.user.player.show_friend_info_screen}')
+
+
+# @Maxi
+def get_skin_unlocked(request):
+    no_issues = test_get_issues(request)
+    if isinstance(no_issues, HttpResponse):
+        return no_issues
+    else:
+        try:
+            friend = Player.objects.get(user__username=request.POST['friend_name'])
+            friendship = Friendship.objects.get(player=request.user.player, friend=friend)
+            response = f"0: {friendship.skins_unlocked[int(request.POST['skin_index'])]}"
+            return HttpResponse(response)
+        except ValueError as val:
+            print(val)
+            return HttpResponse(f"skin_index must be an integer!")
+        except IndexError as index:
+            print(index)
+            return HttpResponse(f"skin_index out of range!")
+        except Exception as e:
+            print(e)
+            return HttpResponse(f"No Friendship between {request.POST['friend_name']} and {request.user.username}")
+
+
+# @Maxi
+def test_get_issues(request):
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
+    if request.method != 'GET':
+        return HttpResponse(f'incorrect request method.')
+    if not hasattr(request.user, 'player'):
+        return HttpResponse(f'user is not a player')
+    else:
+        return 1
 
 # ---------------------------------------------{Leaderboard Stuff}----------------------------------------------------#
 
@@ -201,7 +262,6 @@ def edit_score(request):
 
 # ------------------------------------------------{Match Stuff}-------------------------------------------------------#
 
-# TILTBALL: host_match, join_match, get_match, end_match
 
 def host_match(request):
     if not request.user.is_authenticated:

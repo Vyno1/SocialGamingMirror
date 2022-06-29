@@ -62,6 +62,10 @@ class Friendship(models.Model):
         related_name='followers',
     )
     level = models.IntegerField(default=0)
+    mutual = models.BooleanField(default=False)
+
+    # Der Char an der Stelle i represented, ob Skin i schon freigeschalten wurde als bool
+    skins_unlocked = models.CharField(default="0000000000", max_length=10)
 
     # prohibit multiple instances of the same friendship
     class Meta:
