@@ -13,7 +13,7 @@ bool_true = '0'
 bool_false = '1'
 
 
-# helper functions
+# helper function
 def get_match(request):
     # if not request.user.is_authenticated:
     #     return HttpResponse(not_signed_in_message)
@@ -23,7 +23,7 @@ def get_match(request):
         return HttpResponse(not_a_player_message)
 
     player: Player = request.user.player
-    # TODO: checken, ob player in Match reicht, damit der hier auch gefunden wird
+    # TODO: check if this detects both host and joined player (otherwise adjust joined_player attribute in DB)
     if not hasattr(player, 'match'):
         return HttpResponse(no_match_message)
 
@@ -32,6 +32,7 @@ def get_match(request):
 
 
 def pause_game(request):
+    """sets is_paused in match = true, failure if already true"""
     match: Match = get_match(request)
 
     if match.is_paused:
@@ -42,6 +43,7 @@ def pause_game(request):
 
 
 def get_paused(request):
+    """queries is_paused in match and returns it"""
     match: Match = get_match(request)
     # TODO: exchange by using resp dictionary
 
@@ -51,6 +53,8 @@ def get_paused(request):
 
 
 def resume_game(request):
+    """sets is_paused in match = false, failure if already false"""
+
     match: Match = get_match(request)
     if not match.is_paused:
         return HttpResponse(f'1: game is not paused')
@@ -59,12 +63,9 @@ def resume_game(request):
     return HttpResponse(success_message)
 
 
-def pause_menu_show_friends(request):
-    # TODO: mit maxi machen
-    return
-
-
 def request_reset(request):
+    """sets do_reset in match = true, failure if already true"""
+
     match: Match = get_match(request)
     if match.do_reset:
         return HttpResponse('1: reset already requested')
@@ -73,20 +74,12 @@ def request_reset(request):
     return HttpResponse(success_message)
 
 
-def clear_reset(request):
-    match: Match = get_match(request)
-    # resetting false to false won't be a problem so no error to be thrown here
-    match.do_reset = False
-    return HttpResponse(success_message)
-
-
-def reset_level(request):
-    # TODO: reset all match variables (Steps, positions, etc)
-    # TODO: store initial values -> vyno fragen
-    return
+# reset level is unnecessary, Unity writes updated game state attributes after reset
 
 
 def request_exit(request):
+    """sets do_exit in match = true, failure if already true"""
+
     match: Match = get_match(request)
     if match.do_exit:
         return HttpResponse('1: exit already requested')
@@ -94,7 +87,4 @@ def request_exit(request):
     match.do_reset = True
     return HttpResponse(success_message)
 
-
-def exit_level(request):
-    # TODO: ka
-    return
+# TODO: clear db after level? exit?
