@@ -93,6 +93,9 @@ class WeatherTokens(models.Model):
     token3 = models.CharField(choices=WeatherState.choices, default=WeatherState.none)
     token4 = models.CharField(choices=WeatherState.choices, default=WeatherState.none)
     friend_token = models.CharField(choices=WeatherState.choices, default=WeatherState.none)
+    current_weather = models.CharField(choices=WeatherState.choices, default=WeatherState.none)
+    # TODO: check if already got daily token via bool / date
+    received_daily_token = models.BooleanField(default=False)
 
     def __str__(self):
         return self.owner.user.username
