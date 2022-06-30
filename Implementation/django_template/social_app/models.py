@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from weather import WeatherState
 
 
 # TODO: @team add your attributes and databases here
@@ -29,16 +30,16 @@ class Match(models.Model):
         Player,
         on_delete=models.CASCADE,
     )
-    # @Kerstin removed has_ball
+
+    joined_player = models.OneToOneField(
+        Player,
+        on_delete=models.CASCADE,
+    )
+
     has_started = models.BooleanField(default=False)
     is_over = models.BooleanField(default=False)
-    # The x value of the ball's position as it passes between players
-    position = models.DecimalField(default=0, max_digits=30, decimal_places=20)
-    # The velocity of the ball is passed along so that passing is more dynamic
-    velocity_x = models.DecimalField(
-        default=0, max_digits=30, decimal_places=20)
-    velocity_y = models.DecimalField(
-        default=0, max_digits=30, decimal_places=20)
+    # @Kerstin removed ball attributes
+    # TODO: Game State variables
     # @Kerstin pause menu fields
     is_paused = models.BooleanField(default=False)
     do_reset = models.BooleanField(default=False)
@@ -66,6 +67,7 @@ class Friendship(models.Model):
 
     # Der Char an der Stelle i represented, ob Skin i schon freigeschalten wurde als bool
     skins_unlocked = models.CharField(default="0000000000", max_length=10)
+    skin_drop_chance = models.FloatField(default="0.05")
 
     # prohibit multiple instances of the same friendship
     class Meta:
@@ -76,3 +78,21 @@ class Friendship(models.Model):
     # particular model.
     def __str__(self):
         return f'{self.player.user.username} -> {self.friend.user.username}'
+
+
+class WeatherTokens(models.Model):
+    owner = models.OneToOneField(
+        Player,
+        on_delete=models.CASCADE,
+    )
+
+    # all weather tokens
+    token0 = models.CharField(choices=WeatherState.choices, default=WeatherState.none)
+    token1 = models.CharField(choices=WeatherState.choices, default=WeatherState.none)
+    token2 = models.CharField(choices=WeatherState.choices, default=WeatherState.none)
+    token3 = models.CharField(choices=WeatherState.choices, default=WeatherState.none)
+    token4 = models.CharField(choices=WeatherState.choices, default=WeatherState.none)
+    friend_token = models.CharField(choices=WeatherState.choices, default=WeatherState.none)
+
+    def __str__(self):
+        return self.owner.user.username
