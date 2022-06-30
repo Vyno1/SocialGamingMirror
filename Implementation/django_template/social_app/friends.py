@@ -3,15 +3,19 @@ from django.http import HttpResponse
 
 from .models import Player, Friendship
 
+# ----------------------------------------------{Friendship Stuff}--------------------------------------------------- #
 
-# ----------------------------------------------{Friendship Stuff}----------------------------------------------------#
+GET_DROP = "get_skin_drop_chance"
+GET_SKINS = "get_skins_unlocked"
+INC_DROP = "increase_skin_drop_chance"
+RESET_DROP = "reset_skin_drop_chance"
+INC_LVL = "increase_friendship_level"
+UNLOCK = "unlock_skin"
+GET = "GET"
+POST = "POST"
 
-# view functions:
-# get_names, get_friends, get_followers, add_friend, update_friendship_level, disable_friend_info, get_friend_info_bool,
-#
-# helper functions:
-# test_get_issues
 
+#                                ---------------- view functions ----------------                                     #
 
 # @Maxi (hab nix geändert)
 def get_names(request):
@@ -89,24 +93,6 @@ def add_friend(request):
 
 
 # @Maxi
-def update_friendship_level(request):
-    if not hasattr(request.user, 'player'):
-        return HttpResponse(f'user is not a player')
-    try:
-        friend = Player.objects.get(user__username=request.POST['friend_name'])
-        friendship = Friendship.objects.get(player=request.user.player, friend=friend)
-        if friendship.level < 101:
-            friendship.level += 1
-            friendship.skin1_unlocked = True if friendship.level == 5 else False
-            friendship.skin2_unlocked = True if friendship.level == 10 else False
-            friendship.save()
-        return HttpResponse("0: Updated friendship level successfully")
-    except Exception as e:
-        print(e)
-        return HttpResponse("Something went wrong while updating friendship level")
-
-
-# @Maxi
 def disable_friend_info(request):
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
@@ -121,37 +107,81 @@ def disable_friend_info(request):
 
 
 # @Maxi
-def get_friend_info_bool(request):
-    no_issues = test_get_issues(request)
-    return no_issues \
-        if isinstance(no_issues, HttpResponse) \
-        else HttpResponse(f'0: {request.user.player.show_friend_info_screen}')
+def update_friendship_level(request):
+    friendship_helper(request, INC_LVL)
 
 
 # @Maxi
 def get_skin_unlocked(request):
-    no_issues = test_get_issues(request)
-    if isinstance(no_issues, HttpResponse):
-        return no_issues
-    else:
-        try:
-            friend = Player.objects.get(user__username=request.POST['friend_name'])
-            friendship = Friendship.objects.get(player=request.user.player, friend=friend)
-            response = f"0: {friendship.skins_unlocked[int(request.POST['skin_index'])]}"
-            return HttpResponse(response)
-        except ValueError as val:
-            print(val)
-            return HttpResponse(f"skin_index must be an integer!")
-        except IndexError as index:
-            print(index)
-            return HttpResponse(f"skin_index out of range!")
-        except Exception as e:
-            print(e)
-            return HttpResponse(f"No Friendship between {request.POST['friend_name']} and {request.user.username}")
+    friendship_helper(request, GET_SKINS)
 
 
 # @Maxi
-def test_get_issues(request):
+def get_skin_drop_chance(request):
+    friendship_helper(request, GET_DROP)
+
+
+# @Maxi
+def increase_skin_drop_chance(request):
+    friendship_helper(request, INC_DROP)
+
+
+# @Maxi
+def reset_skin_drop_chance(request):
+    friendship_helper(request, RESET_DROP)
+
+
+# @Maxi
+def unlock_skin(request):
+    friendship_helper(request, UNLOCK, POST)
+
+
+# @Maxi
+def get_friend_info_bool(request):
+    get_helper(request, request.user.player.show_friend_info_screen)
+
+
+#                               ---------------- helper functions ----------------                                    #
+
+# @Maxi
+def friendship_helper(request, response, method=GET):
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
+    if request.method != method:
+        return HttpResponse(f'incorrect request method.')
+    if not hasattr(request.user, 'player'):
+        return HttpResponse(f'user is not a player')
+    try:
+        friend = Player.objects.get(user__username=request.POST['friend_name'])
+        friendship = Friendship.objects.get(player=request.user.player, friend=friend)
+        if response == GET_SKINS:
+            response = f"0: {friendship.skins_unlocked}"
+        elif response == GET_DROP:
+            response = f"0: {friendship.skin_drop_chance}"
+        elif response == INC_DROP:
+            friendship.skin_drop_chance += 0.05
+            response = f"0: Skin drop chance increased:{friendship.skin_drop_chance}"
+        elif response == RESET_DROP:
+            friendship.skin_drop_chance = 0.05
+            response = f"0: Skin drop chance reset:{friendship.skin_drop_chance}"
+        elif response == INC_LVL:
+            if friendship.level < 21:
+                friendship.level += 1
+                friendship.save()
+            response = f"0: New friendship level:{friendship.level}"
+        elif response == UNLOCK:
+            index = request.POST["index"]
+            friendship.skins_unlocked[index] = 1
+            response = f"0: Unlocked Skin at index:{index}"
+        return HttpResponse(response)
+    except Exception as e:
+        print(e)
+        return HttpResponse(f"Either, theres no Friendship between {request.POST['friend_name']}"
+                            f" and {request.user.username}, or something else went really wrong lol")
+
+
+# @Maxi
+def get_helper(request, response):
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
     if request.method != 'GET':
@@ -159,4 +189,6 @@ def test_get_issues(request):
     if not hasattr(request.user, 'player'):
         return HttpResponse(f'user is not a player')
     else:
-        return 1
+        return HttpResponse(f'0: {response}')
+
+# ------------------------------------------------{End of File :)}--------------------------------------------------- #
