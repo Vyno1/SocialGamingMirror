@@ -5,6 +5,7 @@ from . import views
 from . import pause, weather
 from . import friends
 # TODO: @team add your source files here
+from . import gamestate
 
 urlpatterns = [
     #
@@ -39,11 +40,7 @@ urlpatterns = [
     path('get_paused/', pause.get_paused),
     path('resume_game/', pause.resume_game),
     path('request_reset/', pause.request_reset),
-    path('reset_level/', pause.reset_level),
-    path('clear_reset/', pause.clear_reset),
     path('request_exit/', pause.request_exit),
-    path('exit_level/', pause.exit_level),
-    path('pause_menu_show_friends/', pause.pause_menu_show_friends),
     # ...
 
     #
@@ -51,4 +48,9 @@ urlpatterns = [
     #  @Kerstin urls for weather stuff [source: weather.py]
 
     # TODO: @team add your paths here
+
+
+    #
+    # --------------------------------------------{Game State Stuff}---------------------------------------------------#
+    #  @Kerstin urls for pause menu [source: gamestate.py]
 ]
