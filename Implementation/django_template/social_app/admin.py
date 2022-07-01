@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from social_app.models import Player, Friendship, Match, WeatherTokens
+from .models import Player, Friendship, Match, WeatherTokens
 
 # All this does is add these tables to the admin site, where you can view
 # and add entries table entries for testing purposes.

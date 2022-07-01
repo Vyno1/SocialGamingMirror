@@ -107,41 +107,53 @@ def disable_friend_info(request):
 
 
 # @Maxi
+def get_friend_info_bool(request):
+    return get_helper(request, request.user.player.show_friend_info_screen)
+
+
+# @Maxi
 def update_friendship_level(request):
-    friendship_helper(request, INC_LVL)
+    return friendship_helper(request, INC_LVL)
 
 
 # @Maxi
 def get_skin_unlocked(request):
-    friendship_helper(request, GET_SKINS)
+    return friendship_helper(request, GET_SKINS)
 
 
 # @Maxi
 def get_skin_drop_chance(request):
-    friendship_helper(request, GET_DROP)
+    return friendship_helper(request, GET_DROP)
 
 
 # @Maxi
 def increase_skin_drop_chance(request):
-    friendship_helper(request, INC_DROP)
+    return friendship_helper(request, INC_DROP)
 
 
 # @Maxi
 def reset_skin_drop_chance(request):
-    friendship_helper(request, RESET_DROP)
+    return friendship_helper(request, RESET_DROP)
 
 
 # @Maxi
 def unlock_skin(request):
-    friendship_helper(request, UNLOCK, POST)
-
-
-# @Maxi
-def get_friend_info_bool(request):
-    get_helper(request, request.user.player.show_friend_info_screen)
+    return friendship_helper(request, UNLOCK, POST)
 
 
 #                               ---------------- helper functions ----------------                                    #
+
+# @Maxi
+def get_helper(request, response):
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
+    if request.method != 'GET':
+        return HttpResponse(f'incorrect request method.')
+    if not hasattr(request.user, 'player'):
+        return HttpResponse(f'user is not a player')
+    else:
+        return HttpResponse(f'0: {response}')
+
 
 # @Maxi
 def friendship_helper(request, response, method=GET):
@@ -179,16 +191,5 @@ def friendship_helper(request, response, method=GET):
         return HttpResponse(f"Either, theres no Friendship between {request.POST['friend_name']}"
                             f" and {request.user.username}, or something else went really wrong lol")
 
-
-# @Maxi
-def get_helper(request, response):
-    if not request.user.is_authenticated:
-        return HttpResponse(f'user not signed in')
-    if request.method != 'GET':
-        return HttpResponse(f'incorrect request method.')
-    if not hasattr(request.user, 'player'):
-        return HttpResponse(f'user is not a player')
-    else:
-        return HttpResponse(f'0: {response}')
 
 # ------------------------------------------------{End of File :)}--------------------------------------------------- #
