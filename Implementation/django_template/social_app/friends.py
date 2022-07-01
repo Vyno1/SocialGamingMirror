@@ -40,7 +40,8 @@ def get_friends(request):
     # friended the player without the player friending them back).
     for friendship in request.user.player.friends.all():
         response += f'{friendship.friend.user.username}' \
-                    f' {friendship.level},'
+                    f' {friendship.level}' \
+                    f' {friendship.skins_unlocked},'
     # This just removes the trailing comma left by the above iteration
     response = response[:-1]
     return HttpResponse(response)
@@ -56,8 +57,7 @@ def get_followers(request):
     player = request.user.player
     for friendship in Friendship.objects.all():
         if player == friendship.friend:
-            response += f'{friendship.friend.user.username}' \
-                        f' {friendship.friend.level},'
+            response += f'{friendship.friend.user.username},'
             response = response[:-1]
     return HttpResponse(response) if response != '0: ' else HttpResponse('1: No Followers')
 
@@ -117,11 +117,6 @@ def update_friendship_level(request):
 
 
 # @Maxi
-def get_skin_unlocked(request):
-    return friendship_helper(request, GET_SKINS)
-
-
-# @Maxi
 def get_skin_drop_chance(request):
     return friendship_helper(request, GET_DROP)
 
@@ -138,7 +133,7 @@ def reset_skin_drop_chance(request):
 
 # @Maxi
 def unlock_skin(request):
-    return friendship_helper(request, UNLOCK, POST)
+    return friendship_helper(request, UNLOCK)
 
 
 #                               ---------------- helper functions ----------------                                    #
@@ -156,19 +151,17 @@ def get_helper(request, response):
 
 
 # @Maxi
-def friendship_helper(request, response, method=GET):
+def friendship_helper(request, response):
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
-    if request.method != method:
+    if request.method != 'POST':
         return HttpResponse(f'incorrect request method.')
     if not hasattr(request.user, 'player'):
         return HttpResponse(f'user is not a player')
     try:
         friend = Player.objects.get(user__username=request.POST['friend_name'])
         friendship = Friendship.objects.get(player=request.user.player, friend=friend)
-        if response == GET_SKINS:
-            response = f"0: {friendship.skins_unlocked}"
-        elif response == GET_DROP:
+        if response == GET_DROP:
             response = f"0: {friendship.skin_drop_chance}"
         elif response == INC_DROP:
             friendship.skin_drop_chance += 0.05
