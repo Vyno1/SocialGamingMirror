@@ -1,8 +1,8 @@
 # views.py file for game logic
 
 from django.http import HttpResponse
-from models import Match
-from pause import get_match, success_message
+from .models import Match
+from .pause import get_match, success_message
 
 
 def update(request):

@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from weather import WeatherState
+from .weather import WeatherState
 
 
 # TODO: @team add your attributes and databases here
@@ -29,11 +29,13 @@ class Match(models.Model):
     host = models.OneToOneField(
         Player,
         on_delete=models.CASCADE,
+        related_name='host',
     )
 
     joined_player = models.OneToOneField(
         Player,
         on_delete=models.CASCADE,
+        related_name='joined',
     )
 
     has_started = models.BooleanField(default=False)
@@ -67,7 +69,7 @@ class Friendship(models.Model):
 
     # Der Char an der Stelle i represented, ob Skin i schon freigeschalten wurde als bool
     skins_unlocked = models.CharField(default="0000000000", max_length=10)
-    skin_drop_chance = models.FloatField(default="0.05")
+    skin_drop_chance = models.FloatField(default=0.05)
 
     # prohibit multiple instances of the same friendship
     class Meta:
@@ -87,13 +89,13 @@ class WeatherTokens(models.Model):
     )
 
     # all weather tokens
-    token0 = models.CharField(choices=WeatherState.choices, default=WeatherState.none)
-    token1 = models.CharField(choices=WeatherState.choices, default=WeatherState.none)
-    token2 = models.CharField(choices=WeatherState.choices, default=WeatherState.none)
-    token3 = models.CharField(choices=WeatherState.choices, default=WeatherState.none)
-    token4 = models.CharField(choices=WeatherState.choices, default=WeatherState.none)
-    friend_token = models.CharField(choices=WeatherState.choices, default=WeatherState.none)
-    current_weather = models.CharField(choices=WeatherState.choices, default=WeatherState.none)
+    token0 = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
+    token1 = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
+    token2 = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
+    token3 = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
+    token4 = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
+    friend_token = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
+    current_weather = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
     # TODO: check if already got daily token via bool / date
     received_daily_token = models.BooleanField(default=False)
 
