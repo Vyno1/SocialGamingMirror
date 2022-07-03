@@ -3,6 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from datetime import date
 
 from .models import WeatherTokens, Player
+from .weatherstate import WeatherState
 from .kerstin_utils import *
 
 
@@ -60,12 +61,23 @@ def load_friend_token(request):
 
 def get_claim_info(request):
     wt: WeatherTokens = get_weather_table(request)
-    # info: #tokens, #friend_tokens, unlocked_friend_token, daily_claimed, current_weather, friends_current_weather
+    # info: #tokens, #friend_tokens, unlocked_friend_token, daily_claimed, current, friends_current
     token_count: int = get_number_of_tokens(wt)
     friend_token_count: int = get_number_of_friend_tokens(wt)
     # TODO: determine if level is high enough
     unlocked_shared_token: bool = False
     daily_claimed: bool = has_claimed_today(wt)
+    current = wt.current_weather
+    # TODO: get friends' weather
+    # MOCK friends weather (simply use own weather)
+    friends_current = wt.current_weather  # TODO: change!
+
+    # combine into dict
+    data = {"token_count": token_count, "friend_token_count": friend_token_count,
+            "unlocked_shared_token": unlocked_shared_token, "daily_claimed": daily_claimed, "current": current,
+            "friends_current": friends_current}
+
+    return JsonResponse(data)
 
 
 # info helpers
@@ -92,5 +104,6 @@ def get_number_of_friend_tokens(wt: WeatherTokens):
 
 
 def has_claimed_today(wt):
-    # last_update: date =
-    return False
+    last_update: date = wt.date_of_last_daily_claim
+    now: date = date.today()
+    return last_update < now
