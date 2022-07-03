@@ -2,15 +2,7 @@
 from django.http import HttpResponse
 
 from .models import Player, Match
-
-not_signed_in_message = '1: user not signed in'
-wrong_method_message = '1: incorrect request method'
-not_a_player_message = '1: user is not a player'
-no_match_message = '1: user has no match'
-
-success_message = '0: success'
-bool_true = '0'
-bool_false = '1'
+from .kerstin_utils import *
 
 
 # helper function
@@ -23,12 +15,15 @@ def get_match(request):
         return HttpResponse(not_a_player_message)
 
     player: Player = request.user.player
-    # TODO: check if this detects both host and joined player (otherwise adjust joined_player attribute in DB)
-    if not hasattr(player, 'match'):
-        return HttpResponse(no_match_message)
 
-    match: Match = player.match
-    return match
+    # sql query
+    match = Match.objects.filter(host_id=player.id)
+    if not match:
+        match = Match.objects.filter(joined_player_id=player.id)
+        if not match:
+            return HttpResponse(no_match_message)
+
+    return match.first()
 
 
 def pause_game(request):
