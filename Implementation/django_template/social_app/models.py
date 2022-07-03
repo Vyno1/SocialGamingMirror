@@ -26,13 +26,13 @@ class Player(models.Model):
 class Match(models.Model):
     # The host is mostly used as an identifier so that players can find the
     # match they have hosted or joined.
-    host = models.OneToOneField(
+    host = models.ForeignKey(
         Player,
         on_delete=models.CASCADE,
         related_name='host',
     )
 
-    joined_player = models.OneToOneField(
+    joined_player = models.ForeignKey(
         Player,
         on_delete=models.CASCADE,
         related_name='joined',
@@ -67,7 +67,7 @@ class Friendship(models.Model):
     level = models.IntegerField(default=0)
     mutual = models.BooleanField(default=False)
 
-    # Der Char an der Stelle i represented, ob Skin i schon freigeschalten wurde als bool
+    # Der Char an der Stelle i represented, ob Skin i schon freigeschaltet wurde als bool
     skins_unlocked = models.CharField(default="0000000000", max_length=10)
     skin_drop_chance = models.FloatField(default=0.05)
 
