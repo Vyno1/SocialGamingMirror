@@ -173,10 +173,10 @@ def friendship_helper(request, response):
             if friendship.level < 21:
                 friendship.level += 1
                 friendship.save()
-            response = f"0: New friendship level:{friendship.level}"
+            response = f"0: New friendship level:{friendship.level}, skins_unlocked:{friendship.skins_unlocked}"
         elif response == UNLOCK:
             index = request.POST["index"]
-            friendship.skins_unlocked[index] = 1
+            friendship.skins_unlocked[index] = "1"
             response = f"0: Unlocked Skin at index:{index}"
         return HttpResponse(response)
     except Exception as e:
