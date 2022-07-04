@@ -1,6 +1,9 @@
+import datetime
+
 from django.db import models
 from django.contrib.auth.models import User
-from .weather import WeatherState
+
+from .weatherstate import WeatherState
 
 
 # TODO: @team add your attributes and databases here
@@ -26,13 +29,13 @@ class Player(models.Model):
 class Match(models.Model):
     # The host is mostly used as an identifier so that players can find the
     # match they have hosted or joined.
-    host = models.OneToOneField(
+    host = models.ForeignKey(
         Player,
         on_delete=models.CASCADE,
         related_name='host',
     )
 
-    joined_player = models.OneToOneField(
+    joined_player = models.ForeignKey(
         Player,
         on_delete=models.CASCADE,
         related_name='joined',
@@ -67,7 +70,7 @@ class Friendship(models.Model):
     level = models.IntegerField(default=0)
     mutual = models.BooleanField(default=False)
 
-    # Der Char an der Stelle i represented, ob Skin i schon freigeschalten wurde als bool
+    # Der Char an der Stelle i represented, ob Skin i schon freigeschaltet wurde als bool
     skins_unlocked = models.CharField(default="0000000000", max_length=10)
     skin_drop_chance = models.FloatField(default=0.05)
 
@@ -94,10 +97,13 @@ class WeatherTokens(models.Model):
     token2 = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
     token3 = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
     token4 = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
+
+    # daily tokens
     friend_token = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
     current_weather = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
-    # TODO: check if already got daily token via bool / date
-    received_daily_token = models.BooleanField(default=False)
+
+    # date format: datetime.date(year, month, day)
+    date_of_last_daily_claim = models.DateField(default=datetime.date(1969, 1, 1))
 
     def __str__(self):
-        return self.owner.user.username
+        return self.owner.user.player.id
