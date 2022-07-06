@@ -57,12 +57,12 @@ class Friendship(models.Model):
     # friends is unique and different from the list of a player's followers.
     # Followers are players who have befriended you, while friends are players
     # who you have befriended.
-    player = models.ForeignKey(
+    player1 = models.ForeignKey(
         Player,
         on_delete=models.CASCADE,
         related_name='friends',
     )
-    friend = models.ForeignKey(
+    player2 = models.ForeignKey(
         Player,
         on_delete=models.CASCADE,
         related_name='followers',

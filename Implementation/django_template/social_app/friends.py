@@ -2,25 +2,17 @@ import random
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
+from django.db.models import Max
 
 from .models import Player, Friendship
 
+
 # ----------------------------------------------{Friendship Stuff}--------------------------------------------------- #
-
-GET_DROP = "get_skin_drop_chance"
-GET_SKINS = "get_skins_unlocked"
-INC_DROP = "increase_skin_drop_chance"
-RESET_DROP = "reset_skin_drop_chance"
-INC_LVL = "increase_friendship_level"
-UNLOCK = "unlock_skin"
-GET = "GET"
-POST = "POST"
-
 
 #                                ---------------- view functions ----------------                                     #
 
-# @Maxi (hab nix geändert)
-def get_names(request):
+# @Maxi
+def get_names(request) -> HttpResponse:
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
     response = '0:'
@@ -30,44 +22,44 @@ def get_names(request):
     return HttpResponse(response)
 
 
-# @Maxi (hab nix geändert)
-def get_friends(request):
+# @Maxi
+def get_friends(request) -> HttpResponse:
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
     if not hasattr(request.user, 'player'):
         return HttpResponse(f'user is not a player')
     response = '0: '
-    # Iterate through all the friendships of that player. Note that only the
-    # players friends are displayed, not the followers (players that
-    # friended the player without the player friending them back).
     for friendship in request.user.player.friends.all():
         response += f'{friendship.friend.user.username}' \
                     f' {friendship.level}' \
                     f' {friendship.skins_unlocked} ' \
                     f' {friendship.skin_drop_chance} ' \
                     f' {friendship.step_multiplier},'
-    # This just removes the trailing comma left by the above iteration
+    for friendship in request.user.player.followers.all():
+        response += f'{friendship.friend.user.username}' \
+                    f' {friendship.level}' \
+                    f' {friendship.skins_unlocked} ' \
+                    f' {friendship.skin_drop_chance} ' \
+                    f' {friendship.step_multiplier},' if friendship.mutual else ""
     response = response[:-1]
-    return HttpResponse(response)
+    return HttpResponse(response) if response != '0: ' else HttpResponse('1: No Friends...')
 
 
 # @Maxi
-def get_followers(request):
+def get_followers(request) -> HttpResponse:
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
     if not hasattr(request.user, 'player'):
         return HttpResponse(f'user is not a player')
     response = '0: '
-    player = request.user.player
-    for friendship in Friendship.objects.all():
-        if player == friendship.friend:
-            response += f'{friendship.friend.user.username},'
-            response = response[:-1]
-    return HttpResponse(response) if response != '0: ' else HttpResponse('1: No Followers')
+    for friendship in request.user.player.followers.all():
+        response += f'{friendship.player1.user.username},' if not friendship.mutual else ""
+    response = response[:-1]
+    return HttpResponse(response) if response != '0: ' else HttpResponse('1: No Followers...')
 
 
 # @Maxi
-def add_friend(request):
+def add_friend(request) -> HttpResponse:
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
     if request.method != 'POST':
@@ -79,31 +71,31 @@ def add_friend(request):
     player = request.user.player
     friend_name = request.POST['name']
     friend = Player.objects.get(user__username=friend_name)
-
     response = f'0: friendship {player_name} -> {friend_name}'
 
     try:
-        friendship = Friendship.objects.get(player=friend, friend=player)
+        # Wenn es schon eine Freundschaft von friend zu mir gibt, setze sie auf mutual, somit bin ich fake-follower
+        friendship = Friendship.objects.get(player1=friend, player2=player)
         friendship.mutual = True
         response += ", their friendship is now mutual"
     except ObjectDoesNotExist:
         response += f", no friendship {friend_name} -> {player_name}"
-        Friendship(player=player, friend=friend).save()
+        Friendship(player1=player, player2=friend).save()
     except Exception as e:
         print(e)
-        response += f", something went wrong, nothing changed."
-
+        response = f"Something went wrong, nothing changed."
     return HttpResponse(response)
 
 
 # @Maxi
-def disable_friend_info(request):
+def disable_friend_info(request) -> HttpResponse:
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
     if request.method != 'GET':
         return HttpResponse(f'incorrect request method.')
     if not hasattr(request.user, 'player'):
         return HttpResponse(f'user is not a player')
+
     player = request.user.player
     player.show_friend_info_screen = False
     player.save()
@@ -111,12 +103,19 @@ def disable_friend_info(request):
 
 
 # @Maxi
-def get_friend_info_bool(request):
-    return get_helper(request, request.user.player.show_friend_info_screen)
+def get_friend_info_bool(request) -> HttpResponse:
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
+    if request.method != 'GET':
+        return HttpResponse(f'incorrect request method.')
+    if not hasattr(request.user, 'player'):
+        return HttpResponse(f'user is not a player')
+    else:
+        return HttpResponse(f'0: {request.user.player.show_friend_info_screen}')
 
 
 # @Maxi
-def update_friendship_level(request):
+def update_friendship_level(request) -> HttpResponse:
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
     if request.method != 'POST':
@@ -125,48 +124,62 @@ def update_friendship_level(request):
         return HttpResponse(f'user is not a player')
     try:
         friend = Player.objects.get(user__username=request.POST['friend_name'])
-        friendship = Friendship.objects.get(player=request.user.player, friend=friend)
-        if friendship.level < 10000:
-            friendship.level += 1
-        if friendship.step_multiplier <= 2:
-            friendship.step_multiplier += 0.05
-        if friendship.skins_unlocked != "1111111111":
-            if friendship.skin_drop_chance <= 0.70:
-                friendship.skin_drop_chance += 0.05
-            if random.random() < friendship.skin_drop_chance:
-                # random.random() returned nur [0, 1), deswegen ist die length fine und nicht out of bounds
-                index = 0
-                unlocked = friendship.skins_unlocked
-                while unlocked[index] == "1":
-                    index = int(random.random()*len(unlocked))
-                    if index >= len(unlocked) or index < 0:
-                        print("update_friendship_level() crashed in friendship_helper(): skin index out of bounds!")
-                friendship.skins_unlocked[index] = "1"
-                friendship.skin_drop_chance = 0.05
-        friendship.save()
-        response = f'0: {friendship.level} ' \
-                   f'{friendship.skins_unlocked} ' \
-                   f'{friendship.skin_drop_chance}  ' \
-                   f'{friendship.step_multiplier}'
-        return HttpResponse(response)
+        friendship = get_friendship(request.user.player, friend)
+        if friendship.mutual:
+            if friendship.level < 10000:
+                friendship.level += 1
+            if friendship.step_multiplier <= 2:
+                friendship.step_multiplier += 0.05
+            if friendship.skins_unlocked != "1111111111":
+                if friendship.skin_drop_chance <= 0.70:
+                    friendship.skin_drop_chance += 0.05
+                if random.random() < friendship.skin_drop_chance:
+                    # random.random() returned nur [0, 1), deswegen ist die length fine und nicht out of bounds
+                    index = 0
+                    unlocked = friendship.skins_unlocked
+                    while unlocked[index] == "1":
+                        index = int(random.random() * len(unlocked))
+                        if index >= len(unlocked) or index < 0:
+                            print("update_friendship_level() crashed in friendship_helper(): skin index out of bounds!")
+                    unlocked_list = list(unlocked)[index] = "1"
+                    friendship.skins_unlocked = "".join(unlocked_list)
+                    friendship.skin_drop_chance = 0.05
+            friendship.save()
+            response = f'0: {friendship.level} ' \
+                       f'{friendship.skins_unlocked} ' \
+                       f'{friendship.skin_drop_chance}  ' \
+                       f'{friendship.step_multiplier}'
+            return HttpResponse(response)
+    except ObjectDoesNotExist:
+        return HttpResponse(f"Either, theres no Friendship between \"{request.POST['friend_name']}\""
+                            f" and \"{request.user.username}\", or \"{request.POST['friend_name']}\" doesn't exist.")
     except Exception as e:
         print(e)
-        return HttpResponse(f"Either, theres no Friendship between {request.POST['friend_name']}"
-                            f" and {request.user.username}, or something else went really wrong lol")
+        return HttpResponse(f"ObjectDoesNoteExist-Exception-Handling doesnt work, "
+                            f"or something else went really wrong lol")
 
 
 #                               ---------------- helper functions ----------------                                    #
 
 # @Maxi
-def get_helper(request, response):
-    if not request.user.is_authenticated:
-        return HttpResponse(f'user not signed in')
-    if request.method != 'GET':
-        return HttpResponse(f'incorrect request method.')
-    if not hasattr(request.user, 'player'):
-        return HttpResponse(f'user is not a player')
-    else:
-        return HttpResponse(f'0: {response}')
+def get_best_friend(player_name: str) -> Player:
+    player = Player.objects.get(user__username=player_name)
+    friend1 = Friendship.objects.get(player1=player).aggregate(Max('level'))['level']
+    friend2 = Friendship.objects.get(player2=player).aggregate(Max('level'))['level']
+    return friend1 if friend1.level > friend2.level else friend2
 
+
+# @Maxi
+def get_friendship(player: Player, friend: Player) -> Friendship:
+    try:
+        friendship = player.friends.get(player2=friend)
+    except ObjectDoesNotExist:
+        try:
+            friendship = player.followers.get(player1=friend)
+        except ObjectDoesNotExist as error:
+            print(f"No mutual friendship between \"{player.user.username}\" and \"{friend.user.username}\"!")
+            print(error)
+            friendship = None
+    return friendship
 
 # ------------------------------------------------{End of File :)}--------------------------------------------------- #

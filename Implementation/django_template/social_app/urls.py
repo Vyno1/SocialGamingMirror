@@ -29,10 +29,7 @@ urlpatterns = [
     path('disable_friend_info/', friends.disable_friend_info),
     path('get_friend_info_bool/', friends.get_friend_info_bool),
     path('update_friendship_level/', friends.update_friendship_level),
-    path('get_skin_drop_chance/', friends.get_skin_drop_chance),
-    path('increase_skin_drop_chance/', friends.increase_skin_drop_chance),
-    path('reset_skin_drop_chance/', friends.reset_skin_drop_chance),
-    path('unlock_skin/', friends.unlock_skin),
+    path('get_best_friend/', friends.get_best_friend),
     # ...
 
     #
