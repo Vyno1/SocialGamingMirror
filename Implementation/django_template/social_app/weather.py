@@ -59,6 +59,8 @@ def load_friend_token(request):
     return HttpResponse(success_message)
 
 
+# ---------------------------------------------------{ Claim Info }---------------------------------------------------
+
 def get_claim_info(request):
     wt: WeatherTokens = get_weather_table(request)
     # info: #tokens, #friend_tokens, unlocked_friend_token, daily_claimed, current, friends_current
@@ -80,7 +82,8 @@ def get_claim_info(request):
     return JsonResponse(data)
 
 
-# info helpers
+# ------------------------------------------------{ Claim Info Helpers }------------------------------------------------
+
 def get_number_of_tokens(wt: WeatherTokens):
     count = 0
     # a token is counted if it has a state

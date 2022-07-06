@@ -48,6 +48,7 @@ urlpatterns = [
     #
     # ----------------------------------------------{Weather Stuff}----------------------------------------------------#
     #  @Kerstin urls for weather stuff [source: weather.py]
+    path('get_claim_info/', weather.get_claim_info)
 
     # TODO: @team add your paths here
 
