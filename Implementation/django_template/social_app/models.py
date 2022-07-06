@@ -1,6 +1,9 @@
+import datetime
+
 from django.db import models
 from django.contrib.auth.models import User
-from .weather import WeatherState
+
+from .weatherstate import WeatherState
 
 
 # TODO: @team add your attributes and databases here
@@ -94,10 +97,13 @@ class WeatherTokens(models.Model):
     token2 = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
     token3 = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
     token4 = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
+
+    # daily tokens
     friend_token = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
     current_weather = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
-    # TODO: check if already got daily token via bool / date
-    received_daily_token = models.BooleanField(default=False)
+
+    # date format: datetime.date(year, month, day)
+    date_of_last_daily_claim = models.DateField(default=datetime.date(1969, 1, 1))
 
     def __str__(self):
-        return self.owner.user.username
+        return self.owner.user.player.id
