@@ -1,3 +1,5 @@
+import random
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 
@@ -41,7 +43,9 @@ def get_friends(request):
     for friendship in request.user.player.friends.all():
         response += f'{friendship.friend.user.username}' \
                     f' {friendship.level}' \
-                    f' {friendship.skins_unlocked},'
+                    f' {friendship.skins_unlocked} ' \
+                    f' {friendship.skin_drop_chance} ' \
+                    f' {friendship.step_multiplier},'
     # This just removes the trailing comma left by the above iteration
     response = response[:-1]
     return HttpResponse(response)
@@ -113,27 +117,42 @@ def get_friend_info_bool(request):
 
 # @Maxi
 def update_friendship_level(request):
-    return friendship_helper(request, INC_LVL)
-
-
-# @Maxi
-def get_skin_drop_chance(request):
-    return friendship_helper(request, GET_DROP)
-
-
-# @Maxi
-def increase_skin_drop_chance(request):
-    return friendship_helper(request, INC_DROP)
-
-
-# @Maxi
-def reset_skin_drop_chance(request):
-    return friendship_helper(request, RESET_DROP)
-
-
-# @Maxi
-def unlock_skin(request):
-    return friendship_helper(request, UNLOCK)
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
+    if request.method != 'POST':
+        return HttpResponse(f'incorrect request method.')
+    if not hasattr(request.user, 'player'):
+        return HttpResponse(f'user is not a player')
+    try:
+        friend = Player.objects.get(user__username=request.POST['friend_name'])
+        friendship = Friendship.objects.get(player=request.user.player, friend=friend)
+        if friendship.level < 10000:
+            friendship.level += 1
+        if friendship.step_multiplier <= 2:
+            friendship.step_multiplier += 0.05
+        if friendship.skins_unlocked != "1111111111":
+            if friendship.skin_drop_chance <= 0.70:
+                friendship.skin_drop_chance += 0.05
+            if random.random() < friendship.skin_drop_chance:
+                # random.random() returned nur [0, 1), deswegen ist die length fine und nicht out of bounds
+                index = 0
+                unlocked = friendship.skins_unlocked
+                while unlocked[index] == "1":
+                    index = int(random.random()*len(unlocked))
+                    if index >= len(unlocked) or index < 0:
+                        print("update_friendship_level() crashed in friendship_helper(): skin index out of bounds!")
+                friendship.skins_unlocked[index] = "1"
+                friendship.skin_drop_chance = 0.05
+        friendship.save()
+        response = f'0: {friendship.level} ' \
+                   f'{friendship.skins_unlocked} ' \
+                   f'{friendship.skin_drop_chance}  ' \
+                   f'{friendship.step_multiplier}'
+        return HttpResponse(response)
+    except Exception as e:
+        print(e)
+        return HttpResponse(f"Either, theres no Friendship between {request.POST['friend_name']}"
+                            f" and {request.user.username}, or something else went really wrong lol")
 
 
 #                               ---------------- helper functions ----------------                                    #
@@ -148,41 +167,6 @@ def get_helper(request, response):
         return HttpResponse(f'user is not a player')
     else:
         return HttpResponse(f'0: {response}')
-
-
-# @Maxi
-def friendship_helper(request, response):
-    if not request.user.is_authenticated:
-        return HttpResponse(f'user not signed in')
-    if request.method != 'POST':
-        return HttpResponse(f'incorrect request method.')
-    if not hasattr(request.user, 'player'):
-        return HttpResponse(f'user is not a player')
-    try:
-        friend = Player.objects.get(user__username=request.POST['friend_name'])
-        friendship = Friendship.objects.get(player=request.user.player, friend=friend)
-        if response == GET_DROP:
-            response = f"0: {friendship.skin_drop_chance}"
-        elif response == INC_DROP:
-            friendship.skin_drop_chance += 0.05
-            response = f"0: Skin drop chance increased:{friendship.skin_drop_chance}"
-        elif response == RESET_DROP:
-            friendship.skin_drop_chance = 0.05
-            response = f"0: Skin drop chance reset:{friendship.skin_drop_chance}"
-        elif response == INC_LVL:
-            if friendship.level < 21:
-                friendship.level += 1
-                friendship.save()
-            response = f"0: New friendship level:{friendship.level}, skins_unlocked:{friendship.skins_unlocked}"
-        elif response == UNLOCK:
-            index = request.POST["index"]
-            friendship.skins_unlocked[index] = "1"
-            response = f"0: Unlocked Skin at index:{index}"
-        return HttpResponse(response)
-    except Exception as e:
-        print(e)
-        return HttpResponse(f"Either, theres no Friendship between {request.POST['friend_name']}"
-                            f" and {request.user.username}, or something else went really wrong lol")
 
 
 # ------------------------------------------------{End of File :)}--------------------------------------------------- #
