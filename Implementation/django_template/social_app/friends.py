@@ -1,15 +1,16 @@
 import random
+from typing import List
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
-from django.db.models import Max
 
 from .models import Player, Friendship
 
 
 # ----------------------------------------------{Friendship Stuff}--------------------------------------------------- #
-
+WEATHER_SWAP_LEVEL = 10
 #                                ---------------- view functions ----------------                                     #
+
 
 # @Maxi
 def get_names(request) -> HttpResponse:
@@ -132,18 +133,17 @@ def update_friendship_level(request) -> HttpResponse:
                 friendship.level += 1
             if friendship.step_multiplier <= 2:
                 friendship.step_multiplier += 0.05
-            if friendship.skins_unlocked != "1111111111":
+            if friendship.skins_unlocked != "1" * len(friendship.skins_unlocked):
                 if friendship.skin_drop_chance <= 0.70:
                     friendship.skin_drop_chance += 0.05
                 if random.random() < friendship.skin_drop_chance:
-                    # random.random() returned nur [0, 1), deswegen ist die length fine und nicht out of bounds
                     index = 0
                     unlocked = friendship.skins_unlocked
                     while unlocked[index] == "1":
+                        # random.random() returned nur [0, 1), deswegen ist die length fine und nicht out of bounds
                         index = int(random.random() * len(unlocked))
-                        if index >= len(unlocked) or index < 0:
-                            print("update_friendship_level() crashed in friendship_helper(): skin index out of bounds!")
-                    unlocked_list = list(unlocked)[index] = "1"
+                    unlocked_list = list(unlocked)
+                    unlocked_list[index] = "1"
                     friendship.skins_unlocked = "".join(unlocked_list)
                     friendship.skin_drop_chance = 0.05
             friendship.save()
@@ -157,18 +157,33 @@ def update_friendship_level(request) -> HttpResponse:
                             f" and \"{request.user.username}\", or \"{request.POST['friend_name']}\" doesn't exist.")
     except Exception as e:
         print(e)
-        return HttpResponse(f"ObjectDoesNoteExist-Exception-Handling doesnt work, "
+        return HttpResponse(f"ObjectDoesNotExist-Exception-Handling doesnt work, "
                             f"or something else went really wrong lol")
-
 
 #                               ---------------- helper functions ----------------                                    #
 
+
+# @Maxi
+def get_friends_sorted_by_level(player_name: str) -> List[Player]:
+    player = Player.objects.get(user__username=player_name)
+    all_friendships: List[Friendship] = []
+    all_friends: List[Player] = []
+    for friendship in player.friends.all():
+        if friendship.level >= WEATHER_SWAP_LEVEL:
+            all_friendships.append(friendship)
+    for friendship in player.followers.all():
+        if friendship.level >= WEATHER_SWAP_LEVEL and friendship.mutual:
+            all_friendships.append(friendship)
+    all_friendships.sort(key=lambda fr_sh: fr_sh.level, reverse=True)
+    for fs in all_friendships:
+        friend = fs.player1 if player != fs.player1 else fs.player2
+        all_friends.append(friend)
+    return all_friends
+
+
 # @Maxi
 def get_best_friend(player_name: str) -> Player:
-    player = Player.objects.get(user__username=player_name)
-    friend1 = Friendship.objects.get(player1=player).aggregate(Max('level'))['level']
-    friend2 = Friendship.objects.get(player2=player).aggregate(Max('level'))['level']
-    return friend1 if friend1.level > friend2.level else friend2
+    return get_friends_sorted_by_level(player_name)[0]
 
 
 # @Maxi
