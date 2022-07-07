@@ -29,7 +29,6 @@ urlpatterns = [
     path('disable_friend_info/', friends.disable_friend_info),
     path('get_friend_info_bool/', friends.get_friend_info_bool),
     path('update_friendship_level/', friends.update_friendship_level),
-    path('get_best_friend/', friends.get_best_friend),
     # ...
 
     #
