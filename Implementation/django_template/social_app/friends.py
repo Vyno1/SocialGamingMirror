@@ -30,17 +30,18 @@ def get_friends(request) -> HttpResponse:
         return HttpResponse(f'user is not a player')
     response = '0: '
     for friendship in request.user.player.friends.all():
-        response += f'{friendship.friend.user.username}' \
-                    f' {friendship.level}' \
-                    f' {friendship.skins_unlocked} ' \
-                    f' {friendship.skin_drop_chance} ' \
-                    f' {friendship.step_multiplier},'
+        response += f'{friendship.player2.user.username} ' \
+                    f'{friendship.level} ' \
+                    f'{friendship.skins_unlocked} ' \
+                    f'{friendship.skin_drop_chance} ' \
+                    f'{friendship.step_multiplier},'
     for friendship in request.user.player.followers.all():
-        response += f'{friendship.friend.user.username}' \
-                    f' {friendship.level}' \
-                    f' {friendship.skins_unlocked} ' \
-                    f' {friendship.skin_drop_chance} ' \
-                    f' {friendship.step_multiplier},' if friendship.mutual else ""
+        response_text = f'{friendship.player1.user.username} ' \
+                        f'{friendship.level} ' \
+                        f'{friendship.skins_unlocked} ' \
+                        f'{friendship.skin_drop_chance} ' \
+                        f'{friendship.step_multiplier},'
+        response += response_text if friendship.mutual else ""
     response = response[:-1]
     return HttpResponse(response) if response != '0: ' else HttpResponse('1: No Friends...')
 
@@ -55,7 +56,7 @@ def get_followers(request) -> HttpResponse:
     for friendship in request.user.player.followers.all():
         response += f'{friendship.player1.user.username},' if not friendship.mutual else ""
     response = response[:-1]
-    return HttpResponse(response) if response != '0: ' else HttpResponse('1: No Followers...')
+    return HttpResponse(response) if response != '0:' else HttpResponse('1: No Followers...')
 
 
 # @Maxi
@@ -77,6 +78,7 @@ def add_friend(request) -> HttpResponse:
         # Wenn es schon eine Freundschaft von friend zu mir gibt, setze sie auf mutual, somit bin ich fake-follower
         friendship = Friendship.objects.get(player1=friend, player2=player)
         friendship.mutual = True
+        friendship.save()
         response += ", their friendship is now mutual"
     except ObjectDoesNotExist:
         response += f", no friendship {friend_name} -> {player_name}"

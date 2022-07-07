@@ -77,13 +77,14 @@ class Friendship(models.Model):
 
     # prohibit multiple instances of the same friendship
     class Meta:
-        unique_together = ('player', 'friend')
+        unique_together = ('player1', 'player2')
 
     # These str methods are mostly used for debugging purposes. The
     # admin page of the site also uses this str method to display that
     # particular model.
     def __str__(self):
-        return f'{self.player.user.username} -> {self.friend.user.username}'
+        relation = "-->" if not self.mutual else "<-->"
+        return f'{self.player1.user.username} {relation} {self.player2.user.username}'
 
 
 class WeatherTokens(models.Model):
