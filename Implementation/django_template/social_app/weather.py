@@ -7,6 +7,8 @@ from .weatherstate import WeatherState
 from .kerstin_utils import *
 
 
+# ---------------------------------------------------{ Get and Set }----------------------------------------------------
+
 def get_weather_table(request):
     if request.method != 'POST':
         return HttpResponse(wrong_method_message)
@@ -50,16 +52,23 @@ def get_tokens(request):
     return JsonResponse(data)  # set safe=False to pass any data structure
 
 
-def load_friend_token(request):
-    # TODO: bf = get_best_friend
-    # TODO: cw = get_current_weather(bf)
-    # TODO: if cw == WeatherTokens.none: -> no daily mark yet (maybe disable button)
+# --------------------------------------------------{ Weather Updates }-------------------------------------------------
+
+# every change in tokens... has to be registered here!
+def update_player_weather(request):
     wt: WeatherTokens = get_weather_table(request)
-    # TODO: wt.friend_token = cw
+    # store in db
+    wt.current_weather = request.POST['current']
+    wt.token0 = request.POST['t0']
+    wt.token1 = request.POST['t1']
+    wt.token2 = request.POST['t2']
+    wt.token3 = request.POST['t3']
+    wt.token4 = request.POST['t4']
+    wt.friend_token = request.POST['tf']
     return HttpResponse(success_message)
 
 
-# ---------------------------------------------------{ Claim Info }---------------------------------------------------
+# --------------------------------------------------{ Get Claim Info }--------------------------------------------------
 
 def get_claim_info(request):
     wt: WeatherTokens = get_weather_table(request)
@@ -110,3 +119,12 @@ def has_claimed_today(wt):
     last_update: date = wt.date_of_last_daily_claim
     now: date = date.today()
     return last_update < now
+
+
+def load_friend_token(request):
+    # TODO: bf = get_best_friend
+    # TODO: cw = get_current_weather(bf)
+    # TODO: if cw == WeatherTokens.none: -> no daily mark yet (maybe disable button)
+    wt: WeatherTokens = get_weather_table(request)
+    # TODO: wt.friend_token = cw
+    return HttpResponse(success_message)
