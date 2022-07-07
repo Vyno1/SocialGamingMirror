@@ -89,6 +89,7 @@ class WeatherTokens(models.Model):
     owner = models.OneToOneField(
         Player,
         on_delete=models.CASCADE,
+        primary_key=True
     )
 
     # all weather tokens

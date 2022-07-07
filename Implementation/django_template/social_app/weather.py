@@ -11,18 +11,15 @@ from .kerstin_utils import *
 
 def get_weather_table(request):
     if request.method != 'POST':
-        return HttpResponse(wrong_method_message)
+        return None  # HttpResponse(wrong_method_message)
     if not hasattr(request.user, 'player'):
-        return HttpResponse(not_a_player_message)
+        return None  # HttpResponse(not_a_player_message)
 
     player: Player = request.user.player
 
     # sql query
-    wt = WeatherTokens.objects.filter(owner__user_id=player.id)
-    if not wt:
-        return HttpResponse(no_match_message)
-
-    return wt.first()
+    wt = WeatherTokens.objects.get(owner=player)
+    return wt
 
 
 def set_current_weather(request):
@@ -39,6 +36,10 @@ def get_current_weather(player: Player):
 
 def get_tokens(request):
     wt: WeatherTokens = get_weather_table(request)
+
+    if wt is None:
+        return JsonResponse(failed_message, safe=False)
+
     t0 = wt.token0
     t1 = wt.token1
     t2 = wt.token2
@@ -57,6 +58,8 @@ def get_tokens(request):
 # every change in tokens... has to be registered here!
 def update_player_weather(request):
     wt: WeatherTokens = get_weather_table(request)
+    if wt is None:
+        return HttpResponse(failed_message)
     # store in db
     wt.current_weather = request.POST['current']
     wt.token0 = request.POST['t0']
@@ -72,21 +75,30 @@ def update_player_weather(request):
 
 def get_claim_info(request):
     wt: WeatherTokens = get_weather_table(request)
+
+    if wt is None:
+        return HttpResponse(failed_message)
+
+    if has_claimed_today(wt):
+        data: dict = {"success": 1}
+        return JsonResponse(data)
+
     # info: #tokens, #friend_tokens, unlocked_friend_token, daily_claimed, current, friends_current
     token_count: int = get_number_of_tokens(wt)
     friend_token_count: int = get_number_of_friend_tokens(wt)
+    current = wt.current_weather
+
     # TODO: determine if level is high enough
     unlocked_shared_token: bool = False
-    daily_claimed: bool = has_claimed_today(wt)
-    current = wt.current_weather
+
     # TODO: get friends' weather
     # MOCK friends weather (simply use own weather)
     friends_current = wt.current_weather  # TODO: change!
 
     # combine into dict
-    data = {"token_count": token_count, "friend_token_count": friend_token_count,
-            "unlocked_shared_token": unlocked_shared_token, "daily_claimed": daily_claimed, "current": current,
-            "friends_current": friends_current}
+    data: dict = {"success": 0, "token_count": token_count, "friend_token_count": friend_token_count,
+                  "unlocked_shared_token": unlocked_shared_token, "daily_claimed": True, "current": current,
+                  "friends_current": friends_current}
 
     return JsonResponse(data)
 
@@ -115,7 +127,7 @@ def get_number_of_friend_tokens(wt: WeatherTokens):
     return 1
 
 
-def has_claimed_today(wt):
+def has_claimed_today(wt: WeatherTokens):
     last_update: date = wt.date_of_last_daily_claim
     now: date = date.today()
     return last_update < now
@@ -126,5 +138,9 @@ def load_friend_token(request):
     # TODO: cw = get_current_weather(bf)
     # TODO: if cw == WeatherTokens.none: -> no daily mark yet (maybe disable button)
     wt: WeatherTokens = get_weather_table(request)
+
+    if wt is None:
+        return HttpResponse(failed_message)
+
     # TODO: wt.friend_token = cw
     return HttpResponse(success_message)
