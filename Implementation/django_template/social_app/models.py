@@ -21,9 +21,9 @@ class Player(models.Model):
     # @Kerstin added steps
     steps = models.IntegerField(default=0)
 
+
     def __str__(self):
         return self.user.username
-
 
 # This represents a 2-player match of GravityJump
 class Match(models.Model):
@@ -41,6 +41,9 @@ class Match(models.Model):
         related_name='joined',
     )
 
+    # @Robin waitinglist for hosts
+    waiting_list = models.ManyToManyField(Player, blank=True, null=True, related_name='waiting')
+    guest_ready = models.BooleanField(default=False)
     has_started = models.BooleanField(default=False)
     is_over = models.BooleanField(default=False)
     # @Kerstin removed ball attributes
