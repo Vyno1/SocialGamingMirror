@@ -4,8 +4,7 @@ from typing import List
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 
-from .models import Player, Friendship
-
+from .models import Player, Friendship, Match
 
 # ----------------------------------------------{Friendship Stuff}--------------------------------------------------- #
 WEATHER_SWAP_LEVEL = 10
@@ -149,7 +148,7 @@ def update_friendship_level(request) -> HttpResponse:
             friendship.save()
             response = f'0: {friendship.level} ' \
                        f'{friendship.skins_unlocked} ' \
-                       f'{friendship.skin_drop_chance}  ' \
+                       f'{friendship.skin_drop_chance} ' \
                        f'{friendship.step_multiplier}'
             return HttpResponse(response)
     except ObjectDoesNotExist:
@@ -164,7 +163,7 @@ def update_friendship_level(request) -> HttpResponse:
 
 
 # @Maxi
-def get_friends_sorted_by_level(player_name: str) -> List[Player]:
+def get_best_friend(player_name: str) -> Player:
     player = Player.objects.get(user__username=player_name)
     all_friendships: List[Friendship] = []
     all_friends: List[Player] = []
@@ -178,12 +177,7 @@ def get_friends_sorted_by_level(player_name: str) -> List[Player]:
     for fs in all_friendships:
         friend = fs.player1 if player != fs.player1 else fs.player2
         all_friends.append(friend)
-    return all_friends
-
-
-# @Maxi
-def get_best_friend(player_name: str) -> Player:
-    return get_friends_sorted_by_level(player_name)[0]
+    return all_friends[0]
 
 
 # @Maxi
