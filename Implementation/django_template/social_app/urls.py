@@ -48,6 +48,7 @@ urlpatterns = [
     #
     # ----------------------------------------------{Weather Stuff}----------------------------------------------------#
     #  @Kerstin urls for weather stuff [source: weather.py]
+    path('store_current_weather/', weather.set_current_weather),
     path('get_claim_info/', weather.get_claim_info),
     path('store_weather_info/', weather.update_player_weather),
 

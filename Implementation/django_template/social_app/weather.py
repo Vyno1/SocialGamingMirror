@@ -10,8 +10,6 @@ from .kerstin_utils import *
 # ---------------------------------------------------{ Get and Set }----------------------------------------------------
 
 def get_weather_table(request):
-    if request.method != 'POST':
-        return None  # HttpResponse(wrong_method_message)
     if not hasattr(request.user, 'player'):
         return None  # HttpResponse(not_a_player_message)
 
@@ -19,17 +17,22 @@ def get_weather_table(request):
 
     # sql query
     wt = WeatherTokens.objects.get(owner=player)
+    print("owner of wt: " + wt.__str__())
     return wt
 
 
 def set_current_weather(request):
     wt: WeatherTokens = get_weather_table(request)
-    wt.current_weather = request.POST['current_weather']
+    print("'current' field in request: " + request.POST['current'])
+    wt.current_weather = request.POST['current']
+    wt.save()
+    print("'current' field in database: " + wt.current_weather)
+
     return HttpResponse(success_message)
 
 
 def get_current_weather(player: Player):
-    wt = WeatherTokens.objects.filter(owner_id=player)
+    wt = WeatherTokens.objects.filter(owner=player)
     cw = wt.first().current_weather
     return cw
 
