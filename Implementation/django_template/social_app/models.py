@@ -107,4 +107,4 @@ class WeatherTokens(models.Model):
     date_of_last_daily_claim = models.DateField(default=datetime.date(1969, 1, 1))
 
     def __str__(self):
-        return self.owner.user.username
+        return "tokens of " + str(self.owner.user.username)

@@ -49,14 +49,12 @@ urlpatterns = [
     # ----------------------------------------------{Weather Stuff}----------------------------------------------------#
     #  @Kerstin urls for weather stuff [source: weather.py]
     path('store_current_weather/', weather.set_current_weather),
-    path('get_claim_info/', weather.get_claim_info),
+    path('load_tokens/', weather.load_tokens),
     path('store_weather_info/', weather.update_player_weather),
 
     # TODO: @team add your paths here
-
 
     #
     # --------------------------------------------{Game State Stuff}---------------------------------------------------#
     #  @Kerstin urls for pause menu [source: gamestate.py]
 ]
-
