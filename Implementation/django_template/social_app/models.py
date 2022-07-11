@@ -61,12 +61,12 @@ class Friendship(models.Model):
     # friends is unique and different from the list of a player's followers.
     # Followers are players who have befriended you, while friends are players
     # who you have befriended.
-    player = models.ForeignKey(
+    player1 = models.ForeignKey(
         Player,
         on_delete=models.CASCADE,
         related_name='friends',
     )
-    friend = models.ForeignKey(
+    player2 = models.ForeignKey(
         Player,
         on_delete=models.CASCADE,
         related_name='followers',
@@ -77,16 +77,18 @@ class Friendship(models.Model):
     # Der Char an der Stelle i represented, ob Skin i schon freigeschaltet wurde als bool
     skins_unlocked = models.CharField(default="0000000000", max_length=10)
     skin_drop_chance = models.FloatField(default=0.05)
+    step_multiplier = models.FloatField(default=1.0)
 
     # prohibit multiple instances of the same friendship
     class Meta:
-        unique_together = ('player', 'friend')
+        unique_together = ('player1', 'player2')
 
     # These str methods are mostly used for debugging purposes. The
     # admin page of the site also uses this str method to display that
     # particular model.
     def __str__(self):
-        return f'{self.player.user.username} -> {self.friend.user.username}'
+        relation = "-->" if not self.mutual else "<-->"
+        return f'{self.player1.user.username} {relation} {self.player2.user.username}'
 
 
 class WeatherTokens(models.Model):
