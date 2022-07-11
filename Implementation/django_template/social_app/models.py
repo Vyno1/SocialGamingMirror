@@ -20,6 +20,8 @@ class Player(models.Model):
     show_friend_info_screen: bool = models.BooleanField(default=True)
     # @Kerstin added steps
     steps = models.IntegerField(default=0)
+    # @Vyno added current scene
+    scene: str = models.CharField(max_length=20, default="")
 
     def __str__(self):
         return self.user.username
@@ -49,6 +51,8 @@ class Match(models.Model):
     is_paused = models.BooleanField(default=False)
     do_reset = models.BooleanField(default=False)
     do_exit = models.BooleanField(default=False)
+    # @Vyno current Scene for swap
+    current_scene: str = models.CharField(max_length=20, default="")
 
 
 class Friendship(models.Model):
