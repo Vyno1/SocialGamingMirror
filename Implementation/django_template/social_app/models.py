@@ -16,12 +16,15 @@ class Player(models.Model):
         on_delete=models.CASCADE,
         primary_key=True,
     )
-    score = models.IntegerField(default=0)
+    # @Maxi added unlocked levels
+    levels_unlocked = models.IntegerField(default=0)
+    # @Maxi added info-screen bool
     show_friend_info_screen: bool = models.BooleanField(default=True)
     # @Kerstin added steps
     steps = models.IntegerField(default=0)
     # @Vyno added current scene
     scene: str = models.CharField(max_length=20, default="")
+
     def __str__(self):
         return self.user.username
 
