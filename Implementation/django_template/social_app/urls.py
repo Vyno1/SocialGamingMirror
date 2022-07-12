@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views, pause, friends, weather, gamestate
+from . import views, pause, friends, weather, gamestate, lobby
 
 # TODO: @team add your source files here
 
@@ -51,5 +51,15 @@ urlpatterns = [
     #
     # --------------------------------------------{Game State Stuff}---------------------------------------------------#
     #  @Kerstin urls for pause menu [source: gamestate.py]
+
+    #---------------------------------------------{Lobby Stuff}--------------------------------------------------------#
+    path('addHostLobby/', lobby.addHostLobby),
+    path('findLobby/', lobby.findLobby),
+    path('wait/', lobby.wait),
+    #path('setJoinedReady/', lobby.setJoinedReady()),
+    path('startGame/', lobby.startGame),
+    path('leaveLobby/', lobby.leaveLobby),
+    path('isHost/', lobby.isHost),
+
 ]
 
