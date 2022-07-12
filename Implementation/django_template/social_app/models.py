@@ -20,10 +20,11 @@ class Player(models.Model):
     show_friend_info_screen: bool = models.BooleanField(default=True)
     # @Kerstin added steps
     steps = models.IntegerField(default=0)
-
-
+    # @Vyno added current scene
+    scene: str = models.CharField(max_length=20, default="")
     def __str__(self):
         return self.user.username
+
 
 # This represents a 2-player match of GravityJump
 class Match(models.Model):
@@ -40,10 +41,8 @@ class Match(models.Model):
         on_delete=models.CASCADE,
         related_name='joined',
     )
-
     # @Robin waitinglist for hosts
     guest_ready = models.BooleanField(default=False)
-
     has_started = models.BooleanField(default=False)
     is_over = models.BooleanField(default=False)
     # @Kerstin removed ball attributes
@@ -52,9 +51,14 @@ class Match(models.Model):
     is_paused = models.BooleanField(default=False)
     do_reset = models.BooleanField(default=False)
     do_exit = models.BooleanField(default=False)
+    # @Vyno current Scene for swap
+    current_scene: str = models.CharField(max_length=20, default="")
+    # @Vyno bool for scene swap
+    sceneChanges: bool = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('host', 'joined_player')
+
 
 class WaitingList(models.Model):
     waitinghost = models.ForeignKey(
@@ -62,7 +66,6 @@ class WaitingList(models.Model):
         on_delete=models.CASCADE,
         related_name='waitinghost',
     )
-
 
 class Friendship(models.Model):
     # Because both these foreign keys are players, they need to be
