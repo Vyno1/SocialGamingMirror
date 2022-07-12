@@ -33,7 +33,7 @@ def findLobby(request):
     waiters = WaitingList.objects.all()
     print(waiters)
     if waiters.count() >= 1:
-        host: Player = waiters.first()
+        host: Player = waiters[0].waitinghost
         print(host)
         Match(host=host, joined_player=player).save()
         host.delete()

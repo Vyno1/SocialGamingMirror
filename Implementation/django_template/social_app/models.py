@@ -43,6 +43,7 @@ class Match(models.Model):
     )
     # @Robin waitinglist for hosts
     guest_ready = models.BooleanField(default=False)
+
     has_started = models.BooleanField(default=False)
     is_over = models.BooleanField(default=False)
     # @Kerstin removed ball attributes
