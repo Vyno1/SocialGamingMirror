@@ -31,4 +31,5 @@ def get_update(request):
         return HttpResponse(f'user is not a player')
     match = request.user.player.host.all()
     request.user.player.scene = match.current_scene
+    #test
     return HttpResponse(f'0: {match.current_scene}')
