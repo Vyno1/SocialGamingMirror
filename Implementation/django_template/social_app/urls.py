@@ -54,6 +54,6 @@ urlpatterns = [
     # --------------------------------------------{Level Change Stuff}-------------------------------------------------#
     #  @Vyno urls for Level change [source: levelloader.py]
     path('update_level/', levelloader.update_level),
-    path('get_update/', levelloader.get_update)
-    #test
+    path('get_update/', levelloader.get_update),
+    path('ask_for_change/', levelloader.ask_for_change)
 ]
