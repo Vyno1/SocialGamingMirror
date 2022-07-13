@@ -9,11 +9,25 @@ from .kerstin_utils import *
 
 # ---------------------------------------------------{ Get and Set }----------------------------------------------------
 
+def create_weather_table(request):
+    if not hasattr(request.user, 'player'):
+        print("no such player!")
+        return None  # HttpResponse(not_a_player_message)
+
+    player: Player = request.user.player
+
+    # other attributes have correct default value
+    WeatherTokens.objects.create(owner=player)
+
+    return HttpResponse(success_message)
+
+
 def get_weather_table(request):
     if not hasattr(request.user, 'player'):
         return None  # HttpResponse(not_a_player_message)
 
     player: Player = request.user.player
+    print(player)
 
     # sql query
     wt = WeatherTokens.objects.get(owner=player)
@@ -44,11 +58,11 @@ def get_tokens_dict(request) -> dict:
     t2 = wt.token2
     t3 = wt.token3
     t4 = wt.token4
-    tfriend = wt.friend_token
+    tfriend = WeatherState.sun  # TODO: get token
 
     data = {"t0": t0, "t1": t1, "t2": t2, "t3": t3, "t4": t4, "tf": tfriend}
 
-    return data  # set safe=False to pass any data structure
+    return data
 
 
 # --------------------------------------------------{ Weather Updates }-------------------------------------------------
