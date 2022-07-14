@@ -43,6 +43,8 @@ class Match(models.Model):
     )
     # @Robin waitinglist for hosts
     guest_ready = models.BooleanField(default=False)
+    host_left = models.BooleanField(default=False)
+    guest_left = models.BooleanField(default=False)
 
     has_started = models.BooleanField(default=False)
     is_over = models.BooleanField(default=False)
@@ -60,6 +62,10 @@ class Match(models.Model):
     class Meta:
         unique_together = ('host', 'joined_player')
 
+    def __str__(self):
+        relation = "<-->"
+        return f'{self.host.user.username} {relation} {self.joined_player.user.username}'
+
 
 class WaitingList(models.Model):
     waitinghost = models.ForeignKey(
@@ -67,6 +73,8 @@ class WaitingList(models.Model):
         on_delete=models.CASCADE,
         related_name='waitinghost',
     )
+    def __str__(self):
+        return self.waitinghost.user.username
 
 class Friendship(models.Model):
     # Because both these foreign keys are players, they need to be

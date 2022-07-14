@@ -1,11 +1,11 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 
-from .models import Player, Match, WaitingList
+from .models import Player, Match, WaitingList, Friendship
 from .kerstin_utils import *
 
 
-def addHostLobby(request):
+def addHostLobby(request) -> HttpResponse:
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
     if not hasattr(request.user, 'player'):
@@ -23,11 +23,11 @@ def addHostLobby(request):
         return HttpResponse(response)
 
 
-def findLobby(request):
-    if request.method != 'POST':
-        return HttpResponse(wrong_method_message)
+def findLobby(request) -> HttpResponse:
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
     if not hasattr(request.user, 'player'):
-        return HttpResponse(not_a_player_message)
+        return HttpResponse(f'user is not a player')
 
     player: Player = request.user.player
     waiters = WaitingList.objects.all()
@@ -36,46 +36,62 @@ def findLobby(request):
         host: Player = waiters[0].waitinghost
         print(host)
         Match(host=host, joined_player=player).save()
-        host.delete()
+        waiters.first().delete()
         return HttpResponse(f'0:' + f'{host.user.username}')
     else:
         return HttpResponse(f'1:')
 
 
-def wait(request):
-    if request.method != 'POST':
-        return HttpResponse(wrong_method_message)
+def wait(request) -> HttpResponse:
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
     if not hasattr(request.user, 'player'):
-        return HttpResponse(not_a_player_message)
+        return HttpResponse(f'user is not a player')
 
     player: Player = request.user.player
-
-    try:
+    counter = player.host.all().count()
+    if counter >= 1:
         guest: Player = Match.objects.get(host=player).joined_player
         return HttpResponse(f'0:' + f'{guest.user.username}')
-    except:
+    else:
         return HttpResponse(f"1: waitin")
 
 
-def setJoinedReady(request):
-    if request.method != 'POST':
-        return HttpResponse(wrong_method_message)
+def setJoinedReady(request) -> HttpResponse:
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
     if not hasattr(request.user, 'player'):
-        return HttpResponse(not_a_player_message)
+        return HttpResponse(f'user is not a player')
 
     player: Player = request.user.player
 
     match: Match = Match.objects.get(joined_player=player)
-    match.guest_ready = True
+    match.guest_ready = not match.guest_ready
     match.save()
-    return HttpResponse(f'0:')
+    if(match.guest_ready):
+        return HttpResponse(f'0:')
+    else:
+        return HttpResponse(f'1:')
 
-
-def startGame(request):
-    if request.method != 'POST':
-        return HttpResponse(wrong_method_message)
+def checkJoinedReady(request) -> HttpResponse:
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
     if not hasattr(request.user, 'player'):
-        return HttpResponse(not_a_player_message)
+        return HttpResponse(f'user is not a player')
+
+    player: Player = request.user.player
+
+    match: Match = Match.objects.get(host=player)
+    if (match.guest_ready):
+        return HttpResponse(f'0:')
+    else:
+        return HttpResponse(f'1:')
+
+def startGame(request) -> HttpResponse:
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
+    if not hasattr(request.user, 'player'):
+        return HttpResponse(f'user is not a player')
 
     player: Player = request.user.player
     match: Match = Match.objects.get(user__username=player.user.username)
@@ -87,68 +103,98 @@ def startGame(request):
         return HttpResponse(f'lobby not ready')
 
 
-def leaveLobby(request):
-    if request.method != 'POST':
-        return HttpResponse(wrong_method_message)
+def leaveLobby(request) -> HttpResponse:
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
     if not hasattr(request.user, 'player'):
-        return HttpResponse(not_a_player_message)
+        return HttpResponse(f'user is not a player')
 
     player: Player = request.user.player
-
-    if (isHost(player)):
-        try:
-            wait = WaitingList.objects.get(waitinghost=player)
-            wait.delete()
-            return HttpResponse(f"0: left WaitingQueque")
-        except ObjectDoesNotExist:
-            match: Match = Match.objects.get(host=player)
-            match.delete()
-            return HttpResponse(f"0: Host left Lobby -> match deleted")
+    waitincount = player.waitinghost.all().count()
+    if waitincount >= 1:
+        WaitingList.objects.filter(waitinghost=player).delete()
+        return HttpResponse(f'0:')
+    elif isHostHelper(player):
+        match : Match = Match.objects.get(host=player)
+        match.host_left = True
+        match.save()
     else:
         match: Match = Match.objects.get(joined_player=player)
-        WaitingList(waitinghost=match.host)
-        Match.objects.filter(joined_player=player).delete()
-        return HttpResponse(f"1: Joined Player left lobby -> host in waitinglist")
+        match.guest_left = True
+        match.save()
+    return HttpResponse(f'0:')
+
+def checkIfAlone(request) -> HttpResponse:
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
+    if not hasattr(request.user, 'player'):
+        return HttpResponse(f'user is not a player')
+
+    player: Player = request.user.player
+    if isHostHelper(player):
+        match: Match = Match.objects.get(host=player)
+        if match.guest_left:
+            Match.objects.filter(host=player).delete()
+            WaitingList(waitinghost=player).save()
+            return HttpResponse(f'0:')
+        else:
+            return HttpResponse(f'1:')
+    else:
+        match: Match = Match.objects.get(joined_player=player)
+        if match.host_left:
+            Match.objects.filter(joined_player=player).delete()
+            return HttpResponse(f'0:')
+        else:
+            return HttpResponse(f'1:')
 
 
-def isHost(player: Player):
+
+def isHostHelper(player: Player):
     try:
-        Match.objects.get(host=player)
+        host : Player = Match.objects.get(host=player).host
         return True
     except ObjectDoesNotExist:
         return False
+    #counter = player.host.all().count()
+    #if counter >= 1:
+    #    return True
+    #else:
+    #    return False
 
 
-def isHost(request):
-    if request.method != 'POST':
-        return HttpResponse(wrong_method_message)
+def isHost(request) -> HttpResponse:
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
     if not hasattr(request.user, 'player'):
-        return HttpResponse(not_a_player_message)
+        return HttpResponse(f'user is not a player')
 
     player: Player = request.user.player
-    count = player.host.all().count()
+    count = player.waitinghost.all().count()
     if count >= 1:
-        WaitingList.objects.get(player)
-        return HttpResponse(f'0:')
+        response = f'0:'
+        return HttpResponse(response)
     else:
-        return HttpResponse(f'1:')
+        response = f'1:'
+        return HttpResponse(response)
 
-# def checkIfFriend(request):
-#    if not request.user.is_authenticated:
-#        return HttpResponse(f'user not signed in')
-#    if request.method != 'GET':
-#        return HttpResponse(f'incorrect request method.')
-#    if not hasattr(request.user, 'player'):
-#        return HttpResponse(f'user is not a player')
-#
-#    player: Player = request.user.player
-#    friend: Player = Match.objects.get(player)
-#    try:
-#        friendship = player.friends.get(player2=friend)
-#    except ObjectDoesNotExist:
-#        try:
-#            friendship = player.followers.get(player1=friend)
-#        except ObjectDoesNotExist as error:
-#            print(f"No mutual friendship between \"{player.user.username}\" and \"{friend.user.username}\"!")
-#            print(error)
-#            friendship = None
+def isFriend(request) -> HttpResponse:
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
+    if request.method != 'POST':
+        return HttpResponse(f'incorrect request method.')
+    if not hasattr(request.user, 'player'):
+        return HttpResponse(f'user is not a player')
+
+    player = request.user.player
+    friend_name = request.POST['name']
+    friend = Player.objects.get(user__username=friend_name)
+    try:
+        friendship = player.friends.get(player2=friend)
+    except ObjectDoesNotExist:
+        try:
+            friendship = player.followers.get(player1=friend)
+        except ObjectDoesNotExist:
+            return HttpResponse(f'1:')
+
+    return HttpResponse(f'0:')
+

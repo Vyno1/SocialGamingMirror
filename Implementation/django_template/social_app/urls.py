@@ -59,12 +59,17 @@ urlpatterns = [
     path('ask_for_change/', levelloader.ask_for_change),
 
     #---------------------------------------------{Lobby Stuff}--------------------------------------------------------#
+    # @Robin urls for lobby
     path('addHostLobby/', lobby.addHostLobby),
     path('findLobby/', lobby.findLobby),
     path('wait/', lobby.wait),
-    #path('setJoinedReady/', lobby.setJoinedReady()),
+    path('setJoinedReady/', lobby.setJoinedReady),
+    path('checkJoinedReady/', lobby.checkJoinedReady),
     path('startGame/', lobby.startGame),
     path('leaveLobby/', lobby.leaveLobby),
     path('isHost/', lobby.isHost),
+    path('checkIfAlone/', lobby.checkIfAlone),
+    path('isFriend/', lobby.isFriend),
+
 ]
 
