@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views, pause, friends, weather, gamestate
+from . import views, pause, friends, weather, gamestate, levelloader
 
 # TODO: @team add your source files here
 
@@ -29,10 +29,6 @@ urlpatterns = [
     path('disable_friend_info/', friends.disable_friend_info),
     path('get_friend_info_bool/', friends.get_friend_info_bool),
     path('update_friendship_level/', friends.update_friendship_level),
-    path('get_skin_drop_chance/', friends.get_skin_drop_chance),
-    path('increase_skin_drop_chance/', friends.increase_skin_drop_chance),
-    path('reset_skin_drop_chance/', friends.reset_skin_drop_chance),
-    path('unlock_skin/', friends.unlock_skin),
     # ...
 
     #
@@ -58,4 +54,11 @@ urlpatterns = [
     #
     # --------------------------------------------{Game State Stuff}---------------------------------------------------#
     #  @Kerstin urls for pause menu [source: gamestate.py]
+
+    # --------------------------------------------{Level Change Stuff}-------------------------------------------------#
+    #  @Vyno urls for Level change [source: levelloader.py]
+    path('update_level/', levelloader.update_level),
+    path('get_update/', levelloader.get_update),
+    path('ask_for_change/', levelloader.ask_for_change),
+    path('subtract_steps/', levelloader.subtract_steps)
 ]

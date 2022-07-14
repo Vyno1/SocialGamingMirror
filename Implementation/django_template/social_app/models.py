@@ -107,7 +107,6 @@ class WeatherTokens(models.Model):
     token3 = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
     token4 = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
 
-    # friend_token = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
     current_weather = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
 
     # date format: datetime.date(year, month, day)
