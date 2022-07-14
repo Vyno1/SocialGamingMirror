@@ -71,15 +71,15 @@ def get_weather_info(request) -> JsonResponse:
     # friend information
     unlocked_shared: bool = has_unlocked_shared(player=request.user.player)  # TODO: shortcut if false
     best_friend: str = get_best_friend_name(request)
-    friends_current = load_friend_token(request)
+    tf = load_friend_token(request)
 
     if wt.used_shared:
-        friends_current = WeatherState.none
+        tf = WeatherState.none
 
     # return all the information
     # | merges 2 dictionaries (if x is contained in both, it takes x from right dict)
     data: dict = tokens | {"claimed": claimed, "unlocked_shared": unlocked_shared, "best_friend": best_friend,
-                           "tf": friends_current}
+                           "tf": tf}
     print(data)
     return JsonResponse(data)
 
@@ -115,13 +115,14 @@ def get_friend_name(player: Player) -> str:
 
 def has_unlocked_shared(player) -> bool:
     bf: Player = get_best_friend(player)
-    return bf is None
+    return bf is not None
 
 
 def load_friend_token(request) -> WeatherState:
     bf: Player = get_best_friend(request.user.player)
+    print("bf = " + str(bf))
 
-    # None means you sadly have no good friends
+    # bf == None means you sadly have no good friends
     if bf is None:
         return WeatherState.none
 

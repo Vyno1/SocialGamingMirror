@@ -190,7 +190,7 @@ def friendship_helper(request, response):
 # ------------------------------------------------{End of File :)}--------------------------------------------------- #
 
 # @Maxi
-def get_best_friend(player: Player) -> Player:
+def get_best_friend(player: Player) -> Player | None:
     all_friendships: List[Friendship] = []
     all_friends: List[Player] = []
     for friendship in player.friends.all():
@@ -204,7 +204,7 @@ def get_best_friend(player: Player) -> Player:
         friend = fs.player1 if player != fs.player1 else fs.player2
         all_friends.append(friend)
 
-    if not all_friends:
+    if len(all_friends) == 0:
         return None
     return all_friends[0]
 
