@@ -11,10 +11,9 @@ from .friends import get_best_friend
 
 # --------------------------------------------------{ Create Table }----------------------------------------------------
 
-def create_weather_table(request):
+def create_weather_table(request) -> HttpResponse:
     if not hasattr(request.user, 'player'):
-        print("no such player!")
-        return None
+        return HttpResponse(failed_message)
 
     player: Player = request.user.player
 
@@ -24,9 +23,9 @@ def create_weather_table(request):
     return HttpResponse(success_message)
 
 
-# ---------------------------------------------------{ Get and Set }----------------------------------------------------
+# ----------------------------------------------------{ Get Table }-----------------------------------------------------
 
-def get_weather_table(request):
+def get_weather_table(request) -> WeatherTokens | None:
     if not hasattr(request.user, 'player'):
         return None  # HttpResponse(not_a_player_message)
 
@@ -38,6 +37,8 @@ def get_weather_table(request):
     # print("owner of wt: " + wt.__str__())
     return wt
 
+
+# -------------------------------------------------{ Current Weather }--------------------------------------------------
 
 # works :)
 def set_current_weather(request) -> HttpResponse:
@@ -54,7 +55,38 @@ def get_current_weather(player: Player) -> WeatherState:
     return wt.current_weather
 
 
-def get_tokens_dict(request) -> dict:
+# -------------------------------------------------{ Get Weather Info }-------------------------------------------------
+
+def get_weather_info(request) -> JsonResponse:
+    wt: WeatherTokens = get_weather_table(request)
+
+    if wt is None:
+        data: dict = {"success": 1}
+        return JsonResponse(data, safe=False)
+
+    # gather weather information for response
+    claimed: bool = has_claimed_today(wt)
+    tokens: dict = get_tokens(request)
+
+    # friend information
+    unlocked_shared: bool = has_unlocked_shared(player=request.user.player)  # TODO: shortcut if false
+    best_friend: str = get_best_friend_name(request)
+    friends_current = load_friend_token(request)
+
+    if wt.used_shared:
+        friends_current = WeatherState.none
+
+    # return all the information
+    # | merges 2 dictionaries (if x is contained in both, it takes x from right dict)
+    data: dict = tokens | {"claimed": claimed, "unlocked_shared": unlocked_shared, "best_friend": best_friend,
+                           "tf": friends_current}
+    print(data)
+    return JsonResponse(data)
+
+
+# -----------------------------------------------{ Weather Info Helpers }-----------------------------------------------
+
+def get_tokens(request) -> dict:
     wt: WeatherTokens = get_weather_table(request)
 
     t0 = wt.token0
@@ -68,64 +100,7 @@ def get_tokens_dict(request) -> dict:
     return data
 
 
-# --------------------------------------------------{ Weather Updates }-------------------------------------------------
-
-# every change in tokens... has to be registered here!
-def update_player_weather(request) -> HttpResponse:
-    wt: WeatherTokens = get_weather_table(request)
-
-    if wt is None:
-        return HttpResponse(failed_message)
-
-    # store in db
-    wt.token0 = request.POST['t0']
-    wt.token1 = request.POST['t1']
-    wt.token2 = request.POST['t2']
-    wt.token3 = request.POST['t3']
-    wt.token4 = request.POST['t4']
-
-    # wt.friend_token = request.POST['tf']
-
-    if request.POST['update_daily'] == bool_true:
-        wt.date_of_last_daily_claim = date.today()
-
-    if request.POST['used_shared'] == bool_true:
-        wt.used_shared = True
-
-    wt.save()
-
-    return HttpResponse(success_message)
-
-
-# -------------------------------------------------{ Get Weather Info }-------------------------------------------------
-
-def load_tokens(request) -> JsonResponse:
-    wt: WeatherTokens = get_weather_table(request)
-
-    if wt is None:
-        data: dict = {"success": 1}
-        return JsonResponse(data, safe=False)
-
-    # gather weather information for response
-    claimed: bool = has_claimed_today(wt)
-    tokens: dict = get_tokens_dict(request)
-
-    unlocked_shared: bool = has_unlocked_shared(player=request.user.player)
-    best_friend: str = "vyno1"  # get_friend_name()
-    friends_current: WeatherState = WeatherState.none
-
-    if unlocked_shared and not wt.used_shared:
-        friends_current = load_friend_token(request)
-
-    # | merges 2 dictionaries (if x is contained in both, it takes x from right dict)
-    data: dict = tokens | {"claimed": claimed, "unlocked_shared": unlocked_shared, "best_friend": best_friend,
-                           "tf": friends_current}
-    return JsonResponse(data)
-
-
-# -----------------------------------------------{ Weather Info Helpers }-----------------------------------------------
-
-def has_claimed_today(wt: WeatherTokens):
+def has_claimed_today(wt: WeatherTokens) -> bool:
     last_update: date = wt.date_of_last_daily_claim
     now: date = date.today()
     claimed: bool = last_update >= now
@@ -152,3 +127,41 @@ def load_friend_token(request) -> WeatherState:
 
     cw: WeatherState = get_current_weather(bf)
     return cw
+
+
+def get_best_friend_name(request) -> str:
+    bf: Player = get_best_friend(request.user.player)
+
+    # None means you sadly have no good friends
+    if bf is None:
+        return "no friend"
+
+    return bf.user.username
+
+
+# --------------------------------------------------{ Weather Updates }-------------------------------------------------
+
+def update_player_weather(request) -> HttpResponse:
+    wt: WeatherTokens = get_weather_table(request)
+
+    if wt is None:
+        return HttpResponse(failed_message)
+
+    # store in db
+    wt.token0 = request.POST['t0']
+    wt.token1 = request.POST['t1']
+    wt.token2 = request.POST['t2']
+    wt.token3 = request.POST['t3']
+    wt.token4 = request.POST['t4']
+
+    # wt.friend_token = request.POST['tf']
+
+    if request.POST['update_daily'] == bool_true:
+        wt.date_of_last_daily_claim = date.today()
+
+    if request.POST['used_shared'] == bool_true:
+        wt.used_shared = True
+
+    wt.save()
+
+    return HttpResponse(success_message)
