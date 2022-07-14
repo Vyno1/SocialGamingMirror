@@ -5,5 +5,6 @@ no_match_message = '1: user has no match'
 
 success_message = '0: success'
 failed_message = '1: error'
-bool_true = '0'
-bool_false = '1'
+
+bool_true = 'true'
+bool_false = 'false'

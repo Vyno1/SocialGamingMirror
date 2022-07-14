@@ -20,6 +20,8 @@ class Player(models.Model):
     show_friend_info_screen: bool = models.BooleanField(default=True)
     # @Kerstin added steps
     steps = models.IntegerField(default=0)
+    # @Vyno added current scene
+    scene: str = models.CharField(max_length=20, default="")
 
     def __str__(self):
         return self.user.username
@@ -49,6 +51,10 @@ class Match(models.Model):
     is_paused = models.BooleanField(default=False)
     do_reset = models.BooleanField(default=False)
     do_exit = models.BooleanField(default=False)
+    # @Vyno current Scene for swap
+    current_scene: str = models.CharField(max_length=20, default="")
+    # @Vyno bool for scene swap
+    sceneChanges: bool = models.BooleanField(default=False)
 
 
 class Friendship(models.Model):
@@ -57,12 +63,12 @@ class Friendship(models.Model):
     # friends is unique and different from the list of a player's followers.
     # Followers are players who have befriended you, while friends are players
     # who you have befriended.
-    player = models.ForeignKey(
+    player1 = models.ForeignKey(
         Player,
         on_delete=models.CASCADE,
         related_name='friends',
     )
-    friend = models.ForeignKey(
+    player2 = models.ForeignKey(
         Player,
         on_delete=models.CASCADE,
         related_name='followers',
@@ -73,16 +79,18 @@ class Friendship(models.Model):
     # Der Char an der Stelle i represented, ob Skin i schon freigeschaltet wurde als bool
     skins_unlocked = models.CharField(default="0000000000", max_length=10)
     skin_drop_chance = models.FloatField(default=0.05)
+    step_multiplier = models.FloatField(default=1.0)
 
     # prohibit multiple instances of the same friendship
     class Meta:
-        unique_together = ('player', 'friend')
+        unique_together = ('player1', 'player2')
 
     # These str methods are mostly used for debugging purposes. The
     # admin page of the site also uses this str method to display that
     # particular model.
     def __str__(self):
-        return f'{self.player.user.username} -> {self.friend.user.username}'
+        relation = "-->" if not self.mutual else "<-->"
+        return f'{self.player1.user.username} {relation} {self.player2.user.username}'
 
 
 class WeatherTokens(models.Model):
@@ -104,6 +112,7 @@ class WeatherTokens(models.Model):
 
     # date format: datetime.date(year, month, day)
     date_of_last_daily_claim = models.DateField(default=datetime.date(1969, 1, 1))
+    used_shared = models.BooleanField(default=False)
 
     def __str__(self):
         return "tokens of " + str(self.owner.user.username)

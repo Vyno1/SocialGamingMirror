@@ -1,5 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
+from typing import List
 
 from .models import Player, Friendship
 
@@ -13,6 +14,7 @@ INC_LVL = "increase_friendship_level"
 UNLOCK = "unlock_skin"
 GET = "GET"
 POST = "POST"
+WEATHER_SWAP_LEVEL = 10
 
 
 #                                ---------------- view functions ----------------                                     #
@@ -186,3 +188,36 @@ def friendship_helper(request, response):
 
 
 # ------------------------------------------------{End of File :)}--------------------------------------------------- #
+
+# @Maxi
+def get_best_friend(player: Player) -> Player:
+    all_friendships: List[Friendship] = []
+    all_friends: List[Player] = []
+    for friendship in player.friends.all():
+        if friendship.level >= WEATHER_SWAP_LEVEL:
+            all_friendships.append(friendship)
+    for friendship in player.followers.all():
+        if friendship.level >= WEATHER_SWAP_LEVEL and friendship.mutual:
+            all_friendships.append(friendship)
+    all_friendships.sort(key=lambda fr_sh: fr_sh.level, reverse=True)
+    for fs in all_friendships:
+        friend = fs.player1 if player != fs.player1 else fs.player2
+        all_friends.append(friend)
+
+    if not all_friends:
+        return None
+    return all_friends[0]
+
+
+# @Maxi
+def get_friendship(player: Player, friend: Player) -> Friendship:
+    try:
+        friendship = player.friends.get(player2=friend)
+    except ObjectDoesNotExist:
+        try:
+            friendship = player.followers.get(player1=friend)
+        except ObjectDoesNotExist as error:
+            print(f"No mutual friendship between \"{player.user.username}\" and \"{friend.user.username}\"!")
+            print(error)
+            friendship = None
+    return friendship
