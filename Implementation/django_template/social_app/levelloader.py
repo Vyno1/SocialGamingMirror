@@ -57,6 +57,25 @@ def ask_for_change(request):
         return HttpResponse(f'1: scene has not changed yet')
 
 
+# @Vyno
+def subtract_steps(request):
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
+    if request.method != 'POST':
+        return HttpResponse(f'incorrect request method.')
+    if not hasattr(request.user, 'player'):
+        return HttpResponse(f'user is not a player')
+    spent_steps: int = int(request.POST['stepsSpent'])
+    print(spent_steps)
+    player = request.user.player
+    if player.steps >= spent_steps:
+        player.steps -= spent_steps
+        player.save()
+        return HttpResponse(f'0: Steps have been deducted')
+    else:
+        return HttpResponse(f'1: Not enough steps to be deducted')
+
+
 # @Maxi
 def get_levels_unlocked(request):
     if not request.user.is_authenticated:

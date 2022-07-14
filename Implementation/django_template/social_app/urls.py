@@ -56,7 +56,7 @@ urlpatterns = [
     path('update_level/', levelloader.update_level),
     path('get_update/', levelloader.get_update),
     path('ask_for_change/', levelloader.ask_for_change),
+    path('subtract_steps/', levelloader.subtract_steps),
     path('get_levels_unlocked/', levelloader.get_levels_unlocked),
     path('increase_levels_unlocked/', levelloader.increase_levels_unlocked),
-
 ]
