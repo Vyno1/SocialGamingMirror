@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views, pause, friends, weather, gamestate, levelloader
+from . import views, pause, friends, weather, gamestate, levelloader, betweenlevels
 
 # TODO: @team add your source files here
 
@@ -57,6 +57,7 @@ urlpatterns = [
     path('get_update/', levelloader.get_update),
     path('ask_for_change/', levelloader.ask_for_change),
     path('subtract_steps/', levelloader.subtract_steps),
-    path('get_levels_unlocked/', levelloader.get_levels_unlocked),
-    path('increase_levels_unlocked/', levelloader.increase_levels_unlocked),
+    path('get_levels_unlocked/', betweenlevels.get_levels_unlocked),
+    path('increase_levels_unlocked/', betweenlevels.increase_levels_unlocked),
+    path('get_names/', betweenlevels.get_names),
 ]
