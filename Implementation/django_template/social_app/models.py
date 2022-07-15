@@ -41,6 +41,7 @@ class Match(models.Model):
         Player,
         on_delete=models.CASCADE,
         related_name='joined',
+        default=None,
     )
 
     has_started = models.BooleanField(default=False)

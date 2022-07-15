@@ -37,8 +37,8 @@ urlpatterns = [
     path('pause_game/', pause.pause_game),
     path('get_paused/', pause.get_paused),
     path('resume_game/', pause.resume_game),
-    path('request_reset/', pause.request_reset),
-    path('request_exit/', pause.request_exit),
+    path('reset_game/', pause.reset_game),
+    path('exit_game/', pause.exit_game),
     # ...
 
     #

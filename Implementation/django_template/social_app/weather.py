@@ -166,3 +166,6 @@ def update_player_weather(request) -> HttpResponse:
     wt.save()
 
     return HttpResponse(success_message)
+
+
+# --------------------------------------------------------{ END }-------------------------------------------------------
