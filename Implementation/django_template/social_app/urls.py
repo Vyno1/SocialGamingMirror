@@ -29,7 +29,7 @@ urlpatterns = [
     path('disable_friend_info/', friends.disable_friend_info),
     path('get_friend_info_bool/', friends.get_friend_info_bool),
     path('update_friendship_level/', friends.update_friendship_level),
-    #@Robin urls for invite and skinselect
+    # @Robin urls for invite and skinselect
     path('get_mutualfriends/', friends.get_mutualfriends),
     # ...
 
@@ -46,9 +46,11 @@ urlpatterns = [
     #
     # ----------------------------------------------{Weather Stuff}----------------------------------------------------#
     #  @Kerstin urls for weather stuff [source: weather.py]
-
+    path('create_weather_table/', weather.create_weather_table),
+    path('store_current_weather/', weather.set_current_weather),
+    path('load_tokens/', weather.get_weather_info),
+    path('store_weather_info/', weather.update_player_weather),
     # TODO: @team add your paths here
-
 
     #
     # --------------------------------------------{Game State Stuff}---------------------------------------------------#
@@ -59,8 +61,9 @@ urlpatterns = [
     path('update_level/', levelloader.update_level),
     path('get_update/', levelloader.get_update),
     path('ask_for_change/', levelloader.ask_for_change),
+    path('subtract_steps/', levelloader.subtract_steps),
 
-    #---------------------------------------------{Lobby Stuff}--------------------------------------------------------#
+    # ---------------------------------------------{Lobby Stuff}--------------------------------------------------------#
     # @Robin urls for lobby
     path('addHostLobby/', lobby.addHostLobby),
     path('findLobby/', lobby.findLobby),
@@ -73,7 +76,7 @@ urlpatterns = [
     path('checkIfAlone/', lobby.checkIfAlone),
     path('isFriend/', lobby.isFriend),
 
-    #-------------------------------------------------{Urls for Invites}------------------------------
+    # -------------------------------------------------{Urls for Invites}------------------------------
     # @Robin
     path('inviteFriend/', invite.inviteFriend),
     path('checkIfInvited/', invite.checkIfInvited),
@@ -83,4 +86,3 @@ urlpatterns = [
     path('cancel/', invite.cancel),
     path('checkAnswer/', invite.checkAnswer),
 ]
-

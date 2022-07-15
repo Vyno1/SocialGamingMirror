@@ -163,8 +163,7 @@ def update_friendship_level(request) -> HttpResponse:
 
 
 # @Maxi
-def get_best_friend(player_name: str) -> Player:
-    player = Player.objects.get(user__username=player_name)
+def get_best_friend(player: Player) -> Player | None:
     all_friendships: List[Friendship] = []
     all_friends: List[Player] = []
     for friendship in player.friends.all():
@@ -177,6 +176,9 @@ def get_best_friend(player_name: str) -> Player:
     for fs in all_friendships:
         friend = fs.player1 if player != fs.player1 else fs.player2
         all_friends.append(friend)
+
+    if len(all_friends) == 0:
+        return None
     return all_friends[0]
 
 
