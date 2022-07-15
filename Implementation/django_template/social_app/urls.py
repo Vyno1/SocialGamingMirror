@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views, pause, friends, weather, gamestate, lobby, levelloader
+from . import views, pause, friends, weather, gamestate, lobby, levelloader, invite
 
 # TODO: @team add your source files here
 
@@ -29,6 +29,8 @@ urlpatterns = [
     path('disable_friend_info/', friends.disable_friend_info),
     path('get_friend_info_bool/', friends.get_friend_info_bool),
     path('update_friendship_level/', friends.update_friendship_level),
+    #@Robin urls for invite and skinselect
+    path('get_mutualfriends/', friends.get_mutualfriends),
     # ...
 
     #
@@ -71,5 +73,14 @@ urlpatterns = [
     path('checkIfAlone/', lobby.checkIfAlone),
     path('isFriend/', lobby.isFriend),
 
+    #-------------------------------------------------{Urls for Invites}------------------------------
+    # @Robin
+    path('inviteFriend/', invite.inviteFriend),
+    path('checkIfInvited/', invite.checkIfInvited),
+    path('acceptInvite/', invite.acceptInvite),
+    path('declineInvite/', invite.declineInvite),
+    path('start/', invite.start),
+    path('cancel/', invite.cancel),
+    path('checkAnswer/', invite.checkAnswer),
 ]
 

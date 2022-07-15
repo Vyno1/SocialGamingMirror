@@ -1,8 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 
-from .models import Player, Match, WaitingList, Friendship
-from .kerstin_utils import *
+from .models import Player, Match, WaitingList
 
 
 def addHostLobby(request) -> HttpResponse:
@@ -31,8 +30,12 @@ def findLobby(request) -> HttpResponse:
 
     player: Player = request.user.player
     waiters = WaitingList.objects.all()
-    print(waiters)
-    if waiters.count() >= 1:
+    alreadyInLobby = player.joined.all().count()
+    if alreadyInLobby >= 1:
+        match: Match = Match.objects.get(joined_player=player)
+        host: Player = match.host
+        return HttpResponse(f'0:' + f'{host.user.username}')
+    elif waiters.count() >= 1:
         host: Player = waiters[0].waitinghost
         print(host)
         Match(host=host, joined_player=player).save()
@@ -119,9 +122,12 @@ def leaveLobby(request) -> HttpResponse:
         match.host_left = True
         match.save()
     else:
-        match: Match = Match.objects.get(joined_player=player)
-        match.guest_left = True
-        match.save()
+        try:
+            match: Match = Match.objects.get(joined_player=player)
+            match.guest_left = True
+            match.save()
+        except ObjectDoesNotExist:
+            return HttpResponse(f'0:')
     return HttpResponse(f'0:')
 
 def checkIfAlone(request) -> HttpResponse:
@@ -155,11 +161,6 @@ def isHostHelper(player: Player):
         return True
     except ObjectDoesNotExist:
         return False
-    #counter = player.host.all().count()
-    #if counter >= 1:
-    #    return True
-    #else:
-    #    return False
 
 
 def isHost(request) -> HttpResponse:
@@ -170,7 +171,8 @@ def isHost(request) -> HttpResponse:
 
     player: Player = request.user.player
     count = player.waitinghost.all().count()
-    if count >= 1:
+    count2 = player.host.all().count()
+    if count >= 1 or count2 >= 1:
         response = f'0:'
         return HttpResponse(response)
     else:

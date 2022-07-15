@@ -76,6 +76,31 @@ class WaitingList(models.Model):
     def __str__(self):
         return self.waitinghost.user.username
 
+class InviteMatch(models.Model):
+    # The host is mostly used as an identifier so that players can find the
+    # match they have hosted or joined.
+    Inviter = models.ForeignKey(
+        Player,
+        on_delete=models.CASCADE,
+        related_name='inviter',
+    )
+
+    invited_player = models.ForeignKey(
+        Player,
+        on_delete=models.CASCADE,
+        related_name='invited',
+    )
+
+    accepted = models.BooleanField(default=False)
+    started = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('Inviter', 'invited_player')
+
+    def __str__(self):
+        relation = "<-->"
+        return f'{self.inviter.user.username} {relation} {self.invited_player.user.username}'
+
 class Friendship(models.Model):
     # Because both these foreign keys are players, they need to be
     # distinguished using related_name. This way, the list of a player's
