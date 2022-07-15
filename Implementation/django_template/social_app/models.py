@@ -22,6 +22,7 @@ class Player(models.Model):
     steps = models.IntegerField(default=0)
     # @Vyno added current scene
     scene: str = models.CharField(max_length=20, default="")
+
     def __str__(self):
         return self.user.username
 
@@ -96,6 +97,7 @@ class WeatherTokens(models.Model):
     owner = models.OneToOneField(
         Player,
         on_delete=models.CASCADE,
+        primary_key=True
     )
 
     # all weather tokens
@@ -105,12 +107,11 @@ class WeatherTokens(models.Model):
     token3 = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
     token4 = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
 
-    # daily tokens
-    friend_token = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
     current_weather = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
 
     # date format: datetime.date(year, month, day)
     date_of_last_daily_claim = models.DateField(default=datetime.date(1969, 1, 1))
+    used_shared = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.owner.user.player.id
+        return "tokens of " + str(self.owner.user.username)
