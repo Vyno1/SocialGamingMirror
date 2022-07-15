@@ -31,7 +31,7 @@ def pause_game(request) -> HttpResponse:
         return HttpResponse(failed_message)
 
     if match.is_paused:
-        return HttpResponse(f'1: game is already paused')
+        return HttpResponse(failed_message)
 
     match.is_paused = True
     return HttpResponse(success_message)
