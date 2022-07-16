@@ -116,6 +116,7 @@ def get_friend_info_bool(request) -> HttpResponse:
         return HttpResponse(f'0: {request.user.player.show_friend_info_screen}')
 
 
+
 # @Maxi
 def update_friendship_level(request) -> HttpResponse:
     if not request.user.is_authenticated:

@@ -40,3 +40,13 @@ def get_names(request):
         return HttpResponse(f"0: {request.user.player.host.joined.user.username}")
     else:
         return HttpResponse("1: No Match found")
+
+
+# @Maxi
+def get_match_infos(request) -> HttpResponse:
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
+    if request.method != 'GET':
+        return HttpResponse(f'incorrect request method.')
+    if not hasattr(request.user, 'player'):
+        return HttpResponse(f'user is not a player')

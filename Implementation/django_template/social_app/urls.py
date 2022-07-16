@@ -60,4 +60,5 @@ urlpatterns = [
     path('get_levels_unlocked/', betweenlevels.get_levels_unlocked),
     path('increase_levels_unlocked/', betweenlevels.increase_levels_unlocked),
     path('get_names/', betweenlevels.get_names),
+    path('get_match_infos/', betweenlevels.get_match_infos),
 ]
