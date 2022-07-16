@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views, pause, friends, weather, gamestate, lobby, levelloader, invite
+from . import views, pause, friends, weather, gamestate, lobby, levelloader, invite, playerSync
 
 # TODO: @team add your source files here
 
@@ -85,4 +85,7 @@ urlpatterns = [
     path('start/', invite.start),
     path('cancel/', invite.cancel),
     path('checkAnswer/', invite.checkAnswer),
+    # ---------------------------------------------{Player sync}--------------------------------------------------------#
+    path('sync_players_send/', playerSync.sync_players_send),
+    path('sync_players_receive/', playerSync.sync_players_receive),
 ]

@@ -22,6 +22,9 @@ class Player(models.Model):
     steps = models.IntegerField(default=0)
     # @Vyno added current scene
     scene: str = models.CharField(max_length=20, default="")
+    # @Julian added player info
+    position: str = models.CharField(max_length=100, default="")
+    gravity_normal: bool = models.BooleanField(default=True)
 
     def __str__(self):
         return self.user.username
