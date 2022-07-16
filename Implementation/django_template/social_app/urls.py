@@ -62,12 +62,18 @@ urlpatterns = [
     path('get_update/', levelloader.get_update),
     path('ask_for_change/', levelloader.ask_for_change),
     path('subtract_steps/', levelloader.subtract_steps),
+
+    # --------------------------------------------{Between Level Stuff}------------------------------------------------#
+    #  @Maxi urls for screen between the levels [source: betweenlevels.py]
+
     path('get_levels_unlocked/', betweenlevels.get_levels_unlocked),
     path('increase_levels_unlocked/', betweenlevels.increase_levels_unlocked),
     path('get_names/', betweenlevels.get_names),
     path('get_match_infos/', betweenlevels.get_match_infos),
+    path('is_friendship_updated/', betweenlevels.is_friendship_updated),
+    path('update_friendship/', betweenlevels.update_friendship),
 
-    # ---------------------------------------------{Lobby Stuff}--------------------------------------------------------#
+    # ---------------------------------------------{Lobby Stuff}-------------------------------------------------------#
     # @Robin urls for lobby
     path('addHostLobby/', lobby.addHostLobby),
     path('findLobby/', lobby.findLobby),

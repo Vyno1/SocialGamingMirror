@@ -25,7 +25,7 @@ def create_weather_table(request) -> HttpResponse:
 
 # ----------------------------------------------------{ Get Table }-----------------------------------------------------
 
-def get_weather_table(request) -> WeatherTokens | None:
+def get_weather_table(request):
     if not hasattr(request.user, 'player'):
         return None  # HttpResponse(not_a_player_message)
 

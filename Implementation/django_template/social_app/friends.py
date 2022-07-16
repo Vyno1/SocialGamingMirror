@@ -116,7 +116,6 @@ def get_friend_info_bool(request) -> HttpResponse:
         return HttpResponse(f'0: {request.user.player.show_friend_info_screen}')
 
 
-
 # @Maxi
 def update_friendship_level(request) -> HttpResponse:
     if not request.user.is_authenticated:
@@ -164,7 +163,7 @@ def update_friendship_level(request) -> HttpResponse:
 
 
 # @Maxi
-def get_best_friend(player: Player) -> Player | None:
+def get_best_friend(player: Player):
     all_friendships: List[Friendship] = []
     all_friends: List[Player] = []
     for friendship in player.friends.all():
@@ -184,7 +183,7 @@ def get_best_friend(player: Player) -> Player | None:
 
 
 # @Maxi
-def get_friendship(player: Player, friend: Player) -> Friendship:
+def get_friendship(player: Player, friend: Player):
     try:
         friendship = player.friends.get(player2=friend)
     except ObjectDoesNotExist:

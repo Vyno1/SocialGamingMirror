@@ -62,6 +62,8 @@ class Match(models.Model):
     current_scene: str = models.CharField(max_length=20, default="")
     # @Vyno bool for scene swap
     sceneChanges: bool = models.BooleanField(default=False)
+    # @Maxi bool for betweenlevels
+    friendship_is_updated: bool = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('host', 'joined_player')
