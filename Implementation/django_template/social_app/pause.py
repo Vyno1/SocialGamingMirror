@@ -7,7 +7,7 @@ from .kerstin_utils import *
 
 # -------------------------------------------------{ get match helper }-------------------------------------------------
 
-def get_match(request) -> Match | None:
+def get_match(request):
     if request.method != 'POST' or not hasattr(request.user, 'player'):
         return None
 

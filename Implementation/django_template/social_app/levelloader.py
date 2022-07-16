@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from .models import Player
 
 
+# @Vyno
 def update_level(request):
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
@@ -30,6 +31,7 @@ def update_level(request):
     return HttpResponse(f'0: Scene has been updated.')
 
 
+# @Vyno
 def get_update(request):
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
@@ -46,6 +48,7 @@ def get_update(request):
     return HttpResponse(f'0: {match.current_scene}')
 
 
+# @Vyno
 def ask_for_change(request):
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
@@ -60,6 +63,7 @@ def ask_for_change(request):
         return HttpResponse(f'1: scene has not changed yet')
 
 
+# @Vyno
 def subtract_steps(request):
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
@@ -75,3 +79,4 @@ def subtract_steps(request):
         return HttpResponse(f'0: Steps have been deducted')
     else:
         return HttpResponse(f'1: Not enough steps to be deducted')
+
