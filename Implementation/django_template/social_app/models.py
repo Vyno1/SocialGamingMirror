@@ -41,6 +41,7 @@ class Match(models.Model):
         Player,
         on_delete=models.CASCADE,
         related_name='joined',
+        default=None,
     )
     # @Robin waitinglist for hosts
     guest_ready = models.BooleanField(default=False)
@@ -74,8 +75,10 @@ class WaitingList(models.Model):
         on_delete=models.CASCADE,
         related_name='waitinghost',
     )
+
     def __str__(self):
         return self.waitinghost.user.username
+
 
 class InviteMatch(models.Model):
     # The host is mostly used as an identifier so that players can find the
@@ -101,6 +104,7 @@ class InviteMatch(models.Model):
     def __str__(self):
         relation = "<-->"
         return f'{self.inviter.user.username} {relation} {self.invited_player.user.username}'
+
 
 class Friendship(models.Model):
     # Because both these foreign keys are players, they need to be
