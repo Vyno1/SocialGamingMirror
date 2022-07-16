@@ -1,8 +1,18 @@
+# ----------------------------------------------------{ query errors }--------------------------------------------------
+
 not_signed_in_message = '1: user not signed in'
 wrong_method_message = '1: incorrect request method'
 not_a_player_message = '1: user is not a player'
 no_match_message = '1: user has no match'
 
+# ---------------------------------------------------{ status messages }------------------------------------------------
+
 success_message = '0: success'
-bool_true = '0'
-bool_false = '1'
+failed_message = '1: error'
+
+# ----------------------------------------------------{ return bools }--------------------------------------------------
+
+bool_true = 'true'
+bool_false = 'false'
+
+# --------------------------------------------------------{ END }-------------------------------------------------------

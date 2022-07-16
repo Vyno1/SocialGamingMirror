@@ -164,8 +164,7 @@ def update_friendship_level(request) -> HttpResponse:
 
 
 # @Maxi
-def get_best_friend(player_name: str) -> Player:
-    player = Player.objects.get(user__username=player_name)
+def get_best_friend(player: Player) -> Player | None:
     all_friendships: List[Friendship] = []
     all_friends: List[Player] = []
     for friendship in player.friends.all():
@@ -178,6 +177,9 @@ def get_best_friend(player_name: str) -> Player:
     for fs in all_friendships:
         friend = fs.player1 if player != fs.player1 else fs.player2
         all_friends.append(friend)
+
+    if len(all_friends) == 0:
+        return None
     return all_friends[0]
 
 
@@ -193,5 +195,24 @@ def get_friendship(player: Player, friend: Player) -> Friendship:
             print(error)
             friendship = None
     return friendship
+
+
+# @Robin
+def get_mutualfriends(request) -> HttpResponse:
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
+    if not hasattr(request.user, 'player'):
+        return HttpResponse(f'user is not a player')
+    response = '0: '
+    for friendship in request.user.player.friends.all():
+        friend: Player = friendship.player2
+        if friendship.mutual and friend.user.is_authenticated:
+            response += f'{friendship.player2.user.username},'
+    for friendship in request.user.player.followers.all():
+        friend: Player = friendship.player1
+        if friendship.mutual and friend.user.is_authenticated:
+            response += f'{friendship.player1.user.username},'
+    response = response[:-1]
+    return HttpResponse(response) if response != '0: ' else HttpResponse('1: No Friends...')
 
 # ------------------------------------------------{End of File :)}--------------------------------------------------- #

@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views, pause, friends, weather, gamestate, levelloader, betweenlevels
+from . import views, pause, friends, weather, gamestate, levelloader, invite, lobby, betweenlevels
 
 # TODO: @team add your source files here
 
@@ -29,6 +29,8 @@ urlpatterns = [
     path('disable_friend_info/', friends.disable_friend_info),
     path('get_friend_info_bool/', friends.get_friend_info_bool),
     path('update_friendship_level/', friends.update_friendship_level),
+    # @Robin urls for invite and skinselect
+    path('get_mutualfriends/', friends.get_mutualfriends),
     # ...
 
     #
@@ -37,14 +39,17 @@ urlpatterns = [
     path('pause_game/', pause.pause_game),
     path('get_paused/', pause.get_paused),
     path('resume_game/', pause.resume_game),
-    path('request_reset/', pause.request_reset),
-    path('request_exit/', pause.request_exit),
+    path('reset_game/', pause.reset_game),
+    path('exit_game/', pause.exit_game),
     # ...
 
     #
     # ----------------------------------------------{Weather Stuff}----------------------------------------------------#
     #  @Kerstin urls for weather stuff [source: weather.py]
-
+    path('create_weather_table/', weather.create_weather_table),
+    path('store_current_weather/', weather.set_current_weather),
+    path('load_tokens/', weather.get_weather_info),
+    path('store_weather_info/', weather.update_player_weather),
     # TODO: @team add your paths here
 
     #
@@ -61,4 +66,27 @@ urlpatterns = [
     path('increase_levels_unlocked/', betweenlevels.increase_levels_unlocked),
     path('get_names/', betweenlevels.get_names),
     path('get_match_infos/', betweenlevels.get_match_infos),
+
+    # ---------------------------------------------{Lobby Stuff}--------------------------------------------------------#
+    # @Robin urls for lobby
+    path('addHostLobby/', lobby.addHostLobby),
+    path('findLobby/', lobby.findLobby),
+    path('wait/', lobby.wait),
+    path('setJoinedReady/', lobby.setJoinedReady),
+    path('checkJoinedReady/', lobby.checkJoinedReady),
+    path('startGame/', lobby.startGame),
+    path('leaveLobby/', lobby.leaveLobby),
+    path('isHost/', lobby.isHost),
+    path('checkIfAlone/', lobby.checkIfAlone),
+    path('isFriend/', lobby.isFriend),
+
+    # -------------------------------------------------{Urls for Invites}------------------------------
+    # @Robin
+    path('inviteFriend/', invite.inviteFriend),
+    path('checkIfInvited/', invite.checkIfInvited),
+    path('acceptInvite/', invite.acceptInvite),
+    path('declineInvite/', invite.declineInvite),
+    path('start/', invite.start),
+    path('cancel/', invite.cancel),
+    path('checkAnswer/', invite.checkAnswer),
 ]

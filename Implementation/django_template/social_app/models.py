@@ -43,7 +43,12 @@ class Match(models.Model):
         Player,
         on_delete=models.CASCADE,
         related_name='joined',
+        default=None,
     )
+    # @Robin waitinglist for hosts
+    guest_ready = models.BooleanField(default=False)
+    host_left = models.BooleanField(default=False)
+    guest_left = models.BooleanField(default=False)
 
     has_started = models.BooleanField(default=False)
     is_over = models.BooleanField(default=False)
@@ -57,6 +62,50 @@ class Match(models.Model):
     current_scene: str = models.CharField(max_length=20, default="")
     # @Vyno bool for scene swap
     sceneChanges: bool = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('host', 'joined_player')
+
+    def __str__(self):
+        relation = "<-->"
+        return f'{self.host.user.username} {relation} {self.joined_player.user.username}'
+
+
+class WaitingList(models.Model):
+    waitinghost = models.ForeignKey(
+        Player,
+        on_delete=models.CASCADE,
+        related_name='waitinghost',
+    )
+
+    def __str__(self):
+        return self.waitinghost.user.username
+
+
+class InviteMatch(models.Model):
+    # The host is mostly used as an identifier so that players can find the
+    # match they have hosted or joined.
+    Inviter = models.ForeignKey(
+        Player,
+        on_delete=models.CASCADE,
+        related_name='inviter',
+    )
+
+    invited_player = models.ForeignKey(
+        Player,
+        on_delete=models.CASCADE,
+        related_name='invited',
+    )
+
+    accepted = models.BooleanField(default=False)
+    started = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('Inviter', 'invited_player')
+
+    def __str__(self):
+        relation = "<-->"
+        return f'{self.inviter.user.username} {relation} {self.invited_player.user.username}'
 
 
 class Friendship(models.Model):
@@ -99,6 +148,7 @@ class WeatherTokens(models.Model):
     owner = models.OneToOneField(
         Player,
         on_delete=models.CASCADE,
+        primary_key=True
     )
 
     # all weather tokens
@@ -108,12 +158,11 @@ class WeatherTokens(models.Model):
     token3 = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
     token4 = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
 
-    # daily tokens
-    friend_token = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
     current_weather = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
 
     # date format: datetime.date(year, month, day)
     date_of_last_daily_claim = models.DateField(default=datetime.date(1969, 1, 1))
+    used_shared = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.owner.user.player.id
+        return "tokens of " + str(self.owner.user.username)
