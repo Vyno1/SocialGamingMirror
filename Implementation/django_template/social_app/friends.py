@@ -195,4 +195,17 @@ def get_friendship(player: Player, friend: Player) -> Friendship:
             friendship = None
     return friendship
 
+# @Robin
+def get_mutualfriends(request) -> HttpResponse:
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
+    if not hasattr(request.user, 'player'):
+        return HttpResponse(f'user is not a player')
+    response = '0: '
+    for friendship in request.user.player.friends.all():
+        friend: Player = friendship.player2
+        if friendship.mutual and friend.user.is_authenticated:
+            response += f'{friendship.player2.user.username},'
+    response = response[:-1]
+    return HttpResponse(response) if response != '0: ' else HttpResponse('1: No Friends...')
 # ------------------------------------------------{End of File :)}--------------------------------------------------- #

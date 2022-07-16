@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views, pause, friends, weather, gamestate, levelloader
+from . import views, pause, friends, weather, gamestate, lobby, levelloader, invite
 
 # TODO: @team add your source files here
 
@@ -29,6 +29,8 @@ urlpatterns = [
     path('disable_friend_info/', friends.disable_friend_info),
     path('get_friend_info_bool/', friends.get_friend_info_bool),
     path('update_friendship_level/', friends.update_friendship_level),
+    # @Robin urls for invite and skinselect
+    path('get_mutualfriends/', friends.get_mutualfriends),
     # ...
 
     #
@@ -48,7 +50,6 @@ urlpatterns = [
     path('store_current_weather/', weather.set_current_weather),
     path('load_tokens/', weather.get_weather_info),
     path('store_weather_info/', weather.update_player_weather),
-
     # TODO: @team add your paths here
 
     #
@@ -60,5 +61,28 @@ urlpatterns = [
     path('update_level/', levelloader.update_level),
     path('get_update/', levelloader.get_update),
     path('ask_for_change/', levelloader.ask_for_change),
-    path('subtract_steps/', levelloader.subtract_steps)
+    path('subtract_steps/', levelloader.subtract_steps),
+
+    # ---------------------------------------------{Lobby Stuff}--------------------------------------------------------#
+    # @Robin urls for lobby
+    path('addHostLobby/', lobby.addHostLobby),
+    path('findLobby/', lobby.findLobby),
+    path('wait/', lobby.wait),
+    path('setJoinedReady/', lobby.setJoinedReady),
+    path('checkJoinedReady/', lobby.checkJoinedReady),
+    path('startGame/', lobby.startGame),
+    path('leaveLobby/', lobby.leaveLobby),
+    path('isHost/', lobby.isHost),
+    path('checkIfAlone/', lobby.checkIfAlone),
+    path('isFriend/', lobby.isFriend),
+
+    # -------------------------------------------------{Urls for Invites}------------------------------
+    # @Robin
+    path('inviteFriend/', invite.inviteFriend),
+    path('checkIfInvited/', invite.checkIfInvited),
+    path('acceptInvite/', invite.acceptInvite),
+    path('declineInvite/', invite.declineInvite),
+    path('start/', invite.start),
+    path('cancel/', invite.cancel),
+    path('checkAnswer/', invite.checkAnswer),
 ]
