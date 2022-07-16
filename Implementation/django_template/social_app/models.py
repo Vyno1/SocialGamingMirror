@@ -16,7 +16,7 @@ class Player(models.Model):
         on_delete=models.CASCADE,
         primary_key=True,
     )
-    score = models.IntegerField(default=0)
+    levelsUnlocked = models.IntegerField(default=0)
     show_friend_info_screen: bool = models.BooleanField(default=True)
     # @Kerstin added steps
     steps = models.IntegerField(default=0)
@@ -103,7 +103,7 @@ class InviteMatch(models.Model):
 
     def __str__(self):
         relation = "<-->"
-        return f'{self.inviter.user.username} {relation} {self.invited_player.user.username}'
+        return f'{self.Inviter.user.username} {relation} {self.invited_player.user.username}'
 
 
 class Friendship(models.Model):
