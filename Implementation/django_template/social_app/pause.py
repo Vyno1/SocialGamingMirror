@@ -7,19 +7,19 @@ from .kerstin_utils import *
 
 # -------------------------------------------------{ get match helper }-------------------------------------------------
 
-def get_match(request) -> Match | None:
-    if request.method != 'POST' or not hasattr(request.user, 'player'):
+def get_match(request):
+    if not hasattr(request.user, 'player'):
         return None
 
     player: Player = request.user.player
-    # you can "|" filters for performing an "OR" sql query
-    match = Match.objects.filter(host=player) | Match.objects.filter(joined_player=player)
+
+    player_is_host: bool = player.host.all().count() == 1
+    match: Match = Match.objects.get(host=player) if player_is_host else Match.objects.get(joined_player=player)
 
     if not match:
         return None
 
-    # filter returns a "QuerySet" = ~ List of entities -> take first
-    return match.first()
+    return match
 
 
 # ----------------------------------------------------{ Pause Game }----------------------------------------------------
@@ -28,12 +28,29 @@ def pause_game(request) -> HttpResponse:
     match: Match = get_match(request)
 
     if not match:
-        return HttpResponse(failed_message)
+        return HttpResponse("There is no such match")
 
     if match.is_paused:
-        return HttpResponse(failed_message)
+        return HttpResponse("already paused")
 
     match.is_paused = True
+    match.save()
+
+    return HttpResponse(success_message)
+
+
+def resume_game(request) -> HttpResponse:
+    match: Match = get_match(request)
+
+    if not match:
+        return HttpResponse(failed_message)
+
+    if not match.is_paused:
+        return HttpResponse('1: game is not paused')
+
+    match.is_paused = False
+    match.save()
+
     return HttpResponse(success_message)
 
 
@@ -44,20 +61,7 @@ def get_paused(request) -> HttpResponse:
         return HttpResponse(failed_message)
 
     if match.is_paused:
-        return HttpResponse(bool_true)
-    return HttpResponse(bool_false)
-
-
-def resume_game(request) -> HttpResponse:
-    match: Match = get_match(request)
-
-    if not match:
-        return HttpResponse(failed_message)
-
-    if not match.is_paused:
-        return HttpResponse(f'1: game is not paused')
-
-    match.is_paused = False
-    return HttpResponse(success_message)
+        return HttpResponse("0")
+    return HttpResponse("1")
 
 # --------------------------------------------------------{ END }-------------------------------------------------------
