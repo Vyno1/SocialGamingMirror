@@ -16,7 +16,9 @@ class Player(models.Model):
         on_delete=models.CASCADE,
         primary_key=True,
     )
-    score = models.IntegerField(default=0)
+    # @Maxi added unlocked levels
+    levels_unlocked = models.IntegerField(default=0)
+    # @Maxi added info-screen bool
     show_friend_info_screen: bool = models.BooleanField(default=True)
     # @Kerstin added steps
     steps = models.IntegerField(default=0)
@@ -62,6 +64,8 @@ class Match(models.Model):
     current_scene: str = models.CharField(max_length=20, default="")
     # @Vyno bool for scene swap
     sceneChanges: bool = models.BooleanField(default=False)
+    # @Maxi bool for betweenlevels
+    friendship_is_updated: bool = models.BooleanField(default=False)
     # @Julian bool for gravity state
     gravity_normal: bool = models.BooleanField(default=True)
 
