@@ -86,6 +86,9 @@ urlpatterns = [
     path('cancel/', invite.cancel),
     path('checkAnswer/', invite.checkAnswer),
     # ---------------------------------------------{Player sync}--------------------------------------------------------#
-    path('sync_players_send/', playerSync.sync_players_send),
-    path('sync_players_receive/', playerSync.sync_players_receive),
+    # @Julian Strings and methods are reversed for better understanding in unity
+    path('sync_players_receive/', playerSync.sync_players_send),
+    path('sync_players_send/', playerSync.sync_players_receive),
+    path('gravity_send/', playerSync.gravity_receive),
+    path('gravity_receive/', playerSync.gravity_send),
 ]

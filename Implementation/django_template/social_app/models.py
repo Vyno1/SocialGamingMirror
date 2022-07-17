@@ -24,7 +24,6 @@ class Player(models.Model):
     scene: str = models.CharField(max_length=20, default="")
     # @Julian added player info
     position: str = models.CharField(max_length=100, default="")
-    gravity_normal: bool = models.BooleanField(default=True)
 
     def __str__(self):
         return self.user.username
@@ -63,6 +62,8 @@ class Match(models.Model):
     current_scene: str = models.CharField(max_length=20, default="")
     # @Vyno bool for scene swap
     sceneChanges: bool = models.BooleanField(default=False)
+    # @Julian bool for gravity state
+    gravity_normal: bool = models.BooleanField(default=True)
 
     class Meta:
         unique_together = ('host', 'joined_player')
