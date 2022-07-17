@@ -52,12 +52,8 @@ class Match(models.Model):
 
     has_started = models.BooleanField(default=False)
     is_over = models.BooleanField(default=False)
-    # @Kerstin removed ball attributes
-    # TODO: Game State variables
     # @Kerstin pause menu fields
     is_paused = models.BooleanField(default=False)
-    do_reset = models.BooleanField(default=False)
-    do_exit = models.BooleanField(default=False)
     # @Vyno current Scene for swap
     current_scene: str = models.CharField(max_length=20, default="")
     # @Vyno bool for scene swap

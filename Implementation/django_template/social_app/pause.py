@@ -48,8 +48,6 @@ def get_paused(request) -> HttpResponse:
     return HttpResponse(bool_false)
 
 
-# ---------------------------------------------------{ Pause Buttons }--------------------------------------------------
-
 def resume_game(request) -> HttpResponse:
     match: Match = get_match(request)
 
@@ -61,57 +59,5 @@ def resume_game(request) -> HttpResponse:
 
     match.is_paused = False
     return HttpResponse(success_message)
-
-
-def reset_game(request) -> HttpResponse:
-    match: Match = get_match(request)
-
-    if not match:
-        return HttpResponse(failed_message)
-
-    if match.do_reset:
-        return HttpResponse('1: reset already requested')
-
-    match.do_reset = True
-    return HttpResponse(success_message)
-
-
-def exit_game(request) -> HttpResponse:
-    match: Match = get_match(request)
-
-    if not match:
-        return HttpResponse(failed_message)
-
-    if match.do_exit:
-        return HttpResponse('1: exit already requested')
-
-    match.do_reset = True
-    return HttpResponse(success_message)
-
-
-# ------------------------------------------------------{ Getters }-----------------------------------------------------
-
-def get_reset(request) -> HttpResponse:
-    match: Match = get_match(request)
-
-    if not match:
-        return HttpResponse(failed_message)
-
-    if match.do_reset:
-        return HttpResponse(bool_true)
-
-    return HttpResponse(bool_false)
-
-
-def get_exit(request) -> HttpResponse:
-    match: Match = get_match(request)
-
-    if not match:
-        return HttpResponse(failed_message)
-
-    if match.do_exit:
-        return HttpResponse(bool_true)
-
-    return HttpResponse(bool_false)
 
 # --------------------------------------------------------{ END }-------------------------------------------------------
