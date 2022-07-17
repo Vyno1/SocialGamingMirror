@@ -72,6 +72,8 @@ urlpatterns = [
     path('get_match_infos/', betweenlevels.get_match_infos),
     path('is_friendship_updated/', betweenlevels.is_friendship_updated),
     path('update_friendship/', betweenlevels.update_friendship),
+    path('check_exit/', betweenlevels.check_exit),
+    path('exit_level/', betweenlevels.exit_level),
 
     # ---------------------------------------------{Lobby Stuff}-------------------------------------------------------#
     # @Robin urls for lobby

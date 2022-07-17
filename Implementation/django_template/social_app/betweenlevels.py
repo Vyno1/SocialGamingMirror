@@ -61,13 +61,13 @@ def get_match_infos(request) -> HttpResponse:
     #                       [friendship_level: int (-1 if no friendship exists)]
 
     response: str = "0: "
-    response += "1 " if player.host.all().count() >= 1 else "0 "
+    response += "true " if player.host.all().count() >= 1 else "false "
 
-    other_name: str = f"{player.host.get().joined_player}" if response.startswith("0: 1") \
+    other_name: str = f"{player.host.get().joined_player}" if response.startswith("0: true") \
         else f"{player.joined.get().host}"
     response += f"{other_name} "
 
-    response += f"{player.levels_unlocked} " if response.startswith("0: 1") else "-1 "
+    response += f"{player.levels_unlocked} " if response.startswith("0: true") else "-1 "
 
     friendship_level: int = -1
     for friendship in player.friends.all():
@@ -105,9 +105,55 @@ def update_friendship(request):
     if not hasattr(request.user, 'player'):
         return HttpResponse(f'user is not a player')
 
+    # Diese Methode wird nur vom Host aufgerufen, also ist das Match sicher über "request.user.player.host" erreichbar
     match: Match = request.user.player.host
     match.friendship_is_updated = True
     match.save()
 
     return HttpResponse("0: Friendship updated.")
+
+
+# @Maxi
+def check_exit(request):
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
+    if request.method != 'GET':
+        return HttpResponse(f'incorrect request method.')
+    if not hasattr(request.user, 'player'):
+        return HttpResponse(f'user is not a player')
+
+    player: Player = request.user.player
+    match: Match = player.host.first() if player.host.all().count() == 1 else player.joined.first()
+    response: str = "0" if match.sceneChanges else "1"
+    if response == "0":
+        match.sceneChanges = False
+
+    return HttpResponse(response)
+
+
+# @Maxi
+def exit_level(request):
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
+    if request.method != 'GET':
+        return HttpResponse(f'incorrect request method.')
+    if not hasattr(request.user, 'player'):
+        return HttpResponse(f'user is not a player')
+
+    player: Player = request.user.player
+    player_is_host: bool = player.host.all().count() == 1
+    match: Match = player.host.first() if player_is_host else player.joined.first()
+    friend: Player = match.joined_player if player_is_host else match.host
+
+    match.has_started = False
+    match.sceneChanges = True
+    match.current_scene = "LobbyMenu"
+    match.save()
+    player.scene = "LobbyMenu"
+    player.save()
+    friend.scene = "LobbyMenu"
+    friend.save()
+
+    return HttpResponse("0: Set Match to lobby state.")
+
 
