@@ -37,10 +37,12 @@ urlpatterns = [
     # --------------------------------------------{Pause Menu Stuff}---------------------------------------------------#
     #  @Kerstin urls for pause menu [source: pause.py]
     path('pause_game/', pause.pause_game),
-    path('get_paused/', pause.get_paused),
     path('resume_game/', pause.resume_game),
+    path('get_paused/', pause.get_paused),
     path('reset_game/', pause.reset_game),
+    path('get_reset/', pause.get_reset),
     path('exit_game/', pause.exit_game),
+    path('get_exit/', pause.get_exit),
     # ...
 
     #
