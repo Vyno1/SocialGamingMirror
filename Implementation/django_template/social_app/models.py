@@ -50,6 +50,10 @@ class Match(models.Model):
     host_left = models.BooleanField(default=False)
     guest_left = models.BooleanField(default=False)
 
+    # @Robin attributes for skins
+    host_skin = models.CharField(max_length=2, default="0")
+    guest_skin = models.CharField(max_length=2, default="0")
+
     has_started = models.BooleanField(default=False)
     is_over = models.BooleanField(default=False)
     # @Kerstin pause menu fields
@@ -105,7 +109,7 @@ class InviteMatch(models.Model):
 
     def __str__(self):
         relation = "<-->"
-        return f'{self.inviter.user.username} {relation} {self.invited_player.user.username}'
+        return f'{self.Inviter.user.username} {relation} {self.invited_player.user.username}'
 
 
 class Friendship(models.Model):

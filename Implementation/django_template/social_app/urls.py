@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views, pause, friends, weather, gamestate, levelloader, invite, lobby, betweenlevels
+from . import views, pause, friends, weather, gamestate, levelloader, invite, lobby, betweenlevels, steps
 
 # TODO: @team add your source files here
 
@@ -81,10 +81,14 @@ urlpatterns = [
     path('setJoinedReady/', lobby.setJoinedReady),
     path('checkJoinedReady/', lobby.checkJoinedReady),
     path('startGame/', lobby.startGame),
+    path('checkIfstarted/', lobby.checkIfStarted),
     path('leaveLobby/', lobby.leaveLobby),
     path('isHost/', lobby.isHost),
     path('checkIfAlone/', lobby.checkIfAlone),
     path('isFriend/', lobby.isFriend),
+
+    path('setSkin/', lobby.setSkin),
+    path('checkOtherSkin/', lobby.checkOtherSkin),
 
     # -------------------------------------------------{Urls for Invites}------------------------------
     # @Robin
@@ -95,4 +99,8 @@ urlpatterns = [
     path('start/', invite.start),
     path('cancel/', invite.cancel),
     path('checkAnswer/', invite.checkAnswer),
+
+    #-----------------------------------------------------{Utls for steps]-----------------------------
+    # @Robin
+    path('getSteps/', steps.getSteps),
 ]
