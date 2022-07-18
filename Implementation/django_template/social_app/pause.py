@@ -1,5 +1,5 @@
 # views file of @Kerstin
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 
 from .models import Player, Match
 from .kerstin_utils import *
@@ -63,5 +63,34 @@ def get_paused(request) -> HttpResponse:
     if match.is_paused:
         return HttpResponse("0")
     return HttpResponse("1")
+
+
+# ---------------------------------------------------{ Level Tokens }---------------------------------------------------
+
+def get_level_tokens(request) -> JsonResponse:
+    match: Match = get_match(request)
+
+    if not match:
+        # safe=False so that Json doesn't have to return a dict
+        return JsonResponse(failed_message, safe=False)
+
+    t1 = match.token1
+    t2 = match.token2
+
+    data: dict = {"t1": t1, "t2": t2}
+
+    return JsonResponse(data)
+
+
+def set_level_tokens(request) -> HttpResponse:
+    match: Match = get_match(request)
+
+    if not match:
+        return HttpResponse(failed_message)
+
+    match.token1 = request.POST['t1']
+    match.token2 = request.POST['t2']
+
+    return HttpResponse(success_message)
 
 # --------------------------------------------------------{ END }-------------------------------------------------------

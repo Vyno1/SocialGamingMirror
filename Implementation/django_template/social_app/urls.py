@@ -39,6 +39,8 @@ urlpatterns = [
     path('pause_game/', pause.pause_game),
     path('resume_game/', pause.resume_game),
     path('get_paused/', pause.get_paused),
+    path('get_level_tokens/', pause.get_level_tokens),
+    path('set_level_tokens/', pause.set_level_tokens),
     # ...
 
     #

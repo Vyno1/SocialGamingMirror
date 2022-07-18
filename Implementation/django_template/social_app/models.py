@@ -54,6 +54,8 @@ class Match(models.Model):
     is_over = models.BooleanField(default=False)
     # @Kerstin pause menu fields
     is_paused = models.BooleanField(default=False)
+    token1 = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
+    token2 = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
     # @Vyno current Scene for swap
     current_scene: str = models.CharField(max_length=20, default="")
     # @Vyno bool for scene swap
