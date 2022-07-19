@@ -13,7 +13,7 @@ def get_levels_unlocked(request):
         return HttpResponse(f'incorrect request method.')
     if not hasattr(request.user, 'player'):
         return HttpResponse(f'user is not a player')
-    return HttpResponse(f"0: {request.player.levels_unlocked}")
+    return HttpResponse(f"0: {request.user.player.levels_unlocked}")
 
 
 # @Maxi
