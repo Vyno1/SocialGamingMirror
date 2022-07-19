@@ -1,6 +1,7 @@
 from django.urls import path
 
-from . import views, pause, friends, weather, gamestate, levelloader, invite, lobby, betweenlevels, steps
+from . import views, pause, friends, weather, gamestate, levelloader, invite, lobby, betweenlevels, steps, \
+    gravity_manager
 
 # TODO: @team add your source files here
 
@@ -100,7 +101,14 @@ urlpatterns = [
     path('cancel/', invite.cancel),
     path('checkAnswer/', invite.checkAnswer),
 
-    #-----------------------------------------------------{Utls for steps]-----------------------------
+    # -----------------------------------------------------{Utls for steps]-----------------------------
     # @Robin
     path('getSteps/', steps.getSteps),
+
+    # --------------------------------------------{Gravity Object Stuff}-----------------------------------------------#
+    # @Vyno
+    path('setStartState/', gravity_manager.set_start_state),
+    path('updateObjectState/', gravity_manager.update_object_state),
+    path('askForUpdateBool/', gravity_manager.send_update_bool),
+    path('askForUpdateObjectGravities/', gravity_manager.send_object_gravities)
 ]
