@@ -74,8 +74,8 @@ def get_level_tokens(request) -> JsonResponse:
         # safe=False so that Json doesn't have to return a dict
         return JsonResponse(failed_message, safe=False)
 
-    t1 = match.token1
-    t2 = match.token2
+    t1 = match.host_token
+    t2 = match.joined_token
 
     data: dict = {"t1": t1, "t2": t2}
 
@@ -88,8 +88,50 @@ def set_level_tokens(request) -> HttpResponse:
     if not match:
         return HttpResponse(failed_message)
 
-    match.token1 = request.POST['t1']
-    match.token2 = request.POST['t2']
+    match.host_token = request.POST['t1']
+    match.joined_token = request.POST['t2']
+
+    return HttpResponse(success_message)
+
+
+def get_host_token(request) -> HttpResponse:
+    match: Match = get_match(request)
+
+    if not match:
+        return HttpResponse(failed_message)
+
+    print(match.host_token)
+    return HttpResponse(str(match.host_token))
+
+
+def get_joined_token(request) -> HttpResponse:
+    match: Match = get_match(request)
+
+    if not match:
+        return HttpResponse(failed_message)
+
+    print(match.joined_token)
+    return HttpResponse(str(match.joined_token))
+
+
+def set_host_token(request) -> HttpResponse:
+    match: Match = get_match(request)
+
+    if not match:
+        return HttpResponse(failed_message)
+
+    match.host_token = request.POST['token']  # TODO: evtl mapping
+
+    return HttpResponse(success_message)
+
+
+def set_joined_token(request) -> HttpResponse:
+    match: Match = get_match(request)
+
+    if not match:
+        return HttpResponse(failed_message)
+
+    match.joined_token = request.POST['token']  # TODO: evtl mapping
 
     return HttpResponse(success_message)
 
