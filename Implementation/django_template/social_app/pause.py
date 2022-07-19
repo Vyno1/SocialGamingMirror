@@ -4,8 +4,9 @@ from django.http import HttpResponse, JsonResponse
 from .models import Player, Match
 from .kerstin_utils import *
 
-
 # -------------------------------------------------{ get match helper }-------------------------------------------------
+from .weatherstate import WeatherState
+
 
 def get_match(request):
     if not hasattr(request.user, 'player'):
@@ -120,7 +121,8 @@ def set_host_token(request) -> HttpResponse:
     if not match:
         return HttpResponse(failed_message)
 
-    match.host_token = request.POST['token']  # TODO: evtl mapping
+    state: str = request.POST['weather']
+    match.host_token = string_2_weatherstate(state)
 
     return HttpResponse(success_message)
 
@@ -131,8 +133,26 @@ def set_joined_token(request) -> HttpResponse:
     if not match:
         return HttpResponse(failed_message)
 
-    match.joined_token = request.POST['token']  # TODO: evtl mapping
+    state: str = request.POST['weather']
+    match.joined_token = string_2_weatherstate(state)
 
     return HttpResponse(success_message)
+
+
+# -----------------------------------------------{ string to weatherstate }---------------------------------------------
+
+def string_2_weatherstate(string: str) -> WeatherState:
+    if string == "Sun":
+        return WeatherState.sun
+    if string == "Rain":
+        return WeatherState.sun
+    if string == "Snow":
+        return WeatherState.snow
+    if string == "Wind":
+        return WeatherState.wind
+    if string == "Thunder":
+        return WeatherState.thunder
+
+    return WeatherState.none
 
 # --------------------------------------------------------{ END }-------------------------------------------------------
