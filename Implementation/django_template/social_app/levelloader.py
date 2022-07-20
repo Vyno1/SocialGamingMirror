@@ -12,12 +12,8 @@ def update_level(request):
     if not hasattr(request.user, 'player'):
         return HttpResponse(f'user is not a player')
     next_level: str = request.POST['nextLevel']
-    print(request.POST['isReload'])
     is_reload: bool = True if request.POST['isReload'] == 'True' else False
     player = request.user.player
-    print(is_reload)
-    print(next_level)
-    print(player.scene)
     if next_level == player.scene and not is_reload:
         print("help")
         return HttpResponse(f'1: Scene is already the same!')
