@@ -13,20 +13,23 @@ def get_levels_unlocked(request):
         return HttpResponse(f'incorrect request method.')
     if not hasattr(request.user, 'player'):
         return HttpResponse(f'user is not a player')
+
     return HttpResponse(f"0: {request.user.player.levels_unlocked}")
 
 
 # @Maxi
 def increase_levels_unlocked(request):
     if not request.user.is_authenticated:
-        return HttpResponse(f'user not signed in')
+        return HttpResponse(f'user {request.user} not signed in')
     if request.method != 'POST':
         return HttpResponse(f'incorrect request method.')
     if not hasattr(request.user, 'player'):
         return HttpResponse(f'user is not a player')
-    player = request.player
+
+    player = request.user.player
     player.levels_unlocked += 1 if player.levels_unlocked < int(request.POST["max_level"]) else 0
     player.save()
+
     return HttpResponse(f"0: {player.levels_unlocked}")
 
 
@@ -92,12 +95,21 @@ def is_friendship_updated(request):
     if not hasattr(request.user, 'player'):
         return HttpResponse(f'user is not a player')
 
-    response = "0" if request.user.player.joined.friendship_is_updated else "1"
-    return HttpResponse(response)
+    match: Match = request.user.player.joined.first()
+    response = "0:" if match.friendship_is_updated else "1:"
+    try:
+        friendship: Friendship = request.user.player.friends.get(player2=match.host)
+    except ObjectDoesNotExist as e:
+        print(e)
+        print("Continuing...")
+        friendship: Friendship = request.user.player.followers.get(player1=match.host)
+
+    return HttpResponse(f"{response} {friendship.level}")
 
 
 # @Maxi
 def update_friendship(request):
+    print(f"{request.user.username} enters update_friendship()!")
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
     if request.method != 'GET':
@@ -106,7 +118,7 @@ def update_friendship(request):
         return HttpResponse(f'user is not a player')
 
     # Diese Methode wird nur vom Host aufgerufen, also ist das Match sicher über "request.user.player.host" erreichbar
-    match: Match = request.user.player.host
+    match: Match = request.user.player.host.first()
     match.friendship_is_updated = True
     match.save()
 
@@ -115,6 +127,7 @@ def update_friendship(request):
 
 # @Maxi
 def check_exit(request):
+    print(f"{request.user.username} enters check_exit()!")
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
     if request.method != 'GET':
@@ -124,10 +137,12 @@ def check_exit(request):
 
     player: Player = request.user.player
     match: Match = player.host.first() if player.host.all().count() == 1 else player.joined.first()
-    response: str = "0" if match.sceneChanges else "1"
+    response: str = "0" if match.other_player_quit else "1"
     if response == "0":
-        match.sceneChanges = False
+        match.other_player_quit = False
+        match.save()
 
+    print(response)
     return HttpResponse(response)
 
 
@@ -146,7 +161,9 @@ def exit_level(request):
     friend: Player = match.joined_player if player_is_host else match.host
 
     match.has_started = False
-    match.sceneChanges = True
+    match.other_player_quit = True
+    match.friendship_is_updated = False
+    match.guest_ready = False
     match.current_scene = "LobbyMenu"
     match.save()
     player.scene = "LobbyMenu"
@@ -156,4 +173,24 @@ def exit_level(request):
 
     return HttpResponse("0: Set Match to lobby state.")
 
+
+# @Maxi
+def check_continue(request):
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
+    if request.method != 'GET':
+        return HttpResponse(f'incorrect request method.')
+    if not hasattr(request.user, 'player'):
+        return HttpResponse(f'user is not a player')
+
+    match: Match = request.user.player.joined.first()
+    if match.sceneChanges:
+        match.sceneChanges = False
+        player = request.user.player
+        player.scene = match.current_scene
+        match.save()
+        player.save()
+        return HttpResponse(f"0: {match.current_scene}")
+    else:
+        return HttpResponse("1: Match-scene didnt change.")
 
