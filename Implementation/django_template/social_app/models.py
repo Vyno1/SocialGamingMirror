@@ -61,11 +61,15 @@ class Match(models.Model):
     host_token = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
     joined_token = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
     # @Vyno current Scene for swap
-    current_scene: str = models.CharField(max_length=20, default="")
+    current_scene: str = models.CharField(max_length=20, default="0")
     # @Vyno bool for scene swap
     sceneChanges: bool = models.BooleanField(default=False)
     # @Maxi bool for betweenlevels
     friendship_is_updated: bool = models.BooleanField(default=False)
+    # @Vyno list of all gravityObjects and where they are
+    gravity_objects: str = models.CharField(max_length=20, default="0")
+    # @Vyno bool if an object has changed
+    gravity_object_updated: bool = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('host', 'joined_player')
