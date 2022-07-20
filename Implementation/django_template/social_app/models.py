@@ -68,6 +68,7 @@ class Match(models.Model):
     sceneChanges: bool = models.BooleanField(default=False)
     # @Maxi bool for betweenlevels
     friendship_is_updated: bool = models.BooleanField(default=False)
+    other_player_quit: bool = models.BooleanField(default=False)
     # @Vyno list of all gravityObjects and where they are
     gravity_objects: str = models.CharField(max_length=20, default="0")
     # @Vyno bool if an object has changed
