@@ -126,6 +126,7 @@ class Friendship(models.Model):
         Player,
         on_delete=models.CASCADE,
         related_name='friends',
+        default=None
     )
     player2 = models.ForeignKey(
         Player,

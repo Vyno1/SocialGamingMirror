@@ -30,7 +30,6 @@ def get_weather_table(request):
         return None  # HttpResponse(not_a_player_message)
 
     player: Player = request.user.player
-    print(player)
 
     # sql query
     wt = WeatherTokens.objects.get(owner=player)
@@ -80,7 +79,6 @@ def get_weather_info(request) -> JsonResponse:
     # | merges 2 dictionaries (if x is contained in both, it takes x from right dict)
     data: dict = tokens | {"claimed": claimed, "unlocked_shared": unlocked_shared, "best_friend": best_friend,
                            "tf": tf}
-    print(data)
     return JsonResponse(data)
 
 
@@ -120,7 +118,6 @@ def has_unlocked_shared(player) -> bool:
 
 def load_friend_token(request) -> WeatherState:
     bf: Player = get_best_friend(request.user.player)
-    print("bf = " + str(bf))
 
     # bf == None means you sadly have no good friends
     if bf is None:
@@ -166,6 +163,5 @@ def update_player_weather(request) -> HttpResponse:
     wt.save()
 
     return HttpResponse(success_message)
-
 
 # --------------------------------------------------------{ END }-------------------------------------------------------
