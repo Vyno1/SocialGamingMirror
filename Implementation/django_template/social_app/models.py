@@ -60,6 +60,7 @@ class Match(models.Model):
     is_paused = models.BooleanField(default=False)
     host_token = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
     joined_token = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
+    current_weather = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
     # @Vyno current Scene for swap
     current_scene: str = models.CharField(max_length=20, default="0")
     # @Vyno bool for scene swap

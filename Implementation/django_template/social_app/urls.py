@@ -55,11 +55,7 @@ urlpatterns = [
     path('store_current_weather/', weather.set_current_weather),
     path('load_tokens/', weather.get_weather_info),
     path('store_weather_info/', weather.update_player_weather),
-    # TODO: @team add your paths here
-
-    #
-    # --------------------------------------------{Game State Stuff}---------------------------------------------------#
-    #  @Kerstin urls for pause menu [source: gamestate.py]
+    path('set_level_current/', weather.set_current_weather),
 
     # --------------------------------------------{Level Change Stuff}-------------------------------------------------#
     #  @Vyno urls for Level change [source: levelloader.py]
