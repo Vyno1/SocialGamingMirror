@@ -96,26 +96,30 @@ def set_level_tokens(request) -> HttpResponse:
 
 
 def get_host_token(request) -> HttpResponse:
+    # print("get host was requested by " + request.user.username)
+
     match: Match = get_match(request)
 
     if not match:
         return HttpResponse(failed_message)
 
-    print(match.host_token)
     return HttpResponse(str(match.host_token))
 
 
 def get_joined_token(request) -> HttpResponse:
+    # print("get joined was requested by " + request.user.username)
+
     match: Match = get_match(request)
 
     if not match:
         return HttpResponse(failed_message)
 
-    print(match.joined_token)
     return HttpResponse(str(match.joined_token))
 
 
 def set_host_token(request) -> HttpResponse:
+    print("set host was requested by " + request.user.username)
+
     match: Match = get_match(request)
 
     if not match:
@@ -124,10 +128,14 @@ def set_host_token(request) -> HttpResponse:
     state: str = request.POST['weather']
     match.host_token = string_2_weatherstate(state)
 
+    match.save()
+
     return HttpResponse(success_message)
 
 
 def set_joined_token(request) -> HttpResponse:
+    print("set joined was requested by " + request.user.username)
+
     match: Match = get_match(request)
 
     if not match:
@@ -136,23 +144,26 @@ def set_joined_token(request) -> HttpResponse:
     state: str = request.POST['weather']
     match.joined_token = string_2_weatherstate(state)
 
+    match.save()
+
     return HttpResponse(success_message)
 
 
 # -----------------------------------------------{ string to weatherstate }---------------------------------------------
 
 def string_2_weatherstate(string: str) -> WeatherState:
-    if string == "Sun":
+    if string == "sun":
         return WeatherState.sun
-    if string == "Rain":
+    if string == "rain":
         return WeatherState.sun
-    if string == "Snow":
+    if string == "snow":
         return WeatherState.snow
-    if string == "Wind":
+    if string == "wind":
         return WeatherState.wind
-    if string == "Thunder":
+    if string == "thunder":
         return WeatherState.thunder
 
+    print(string)
     return WeatherState.none
 
 # --------------------------------------------------------{ END }-------------------------------------------------------

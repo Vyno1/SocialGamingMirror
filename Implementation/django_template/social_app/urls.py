@@ -42,10 +42,10 @@ urlpatterns = [
     path('get_paused/', pause.get_paused),
     path('get_level_tokens/', pause.get_level_tokens),
     path('set_level_tokens/', pause.set_level_tokens),
-    path('set_host_level_token', pause.set_host_token),
-    path('set_joined_level_token', pause.set_joined_token),
-    path('get_host_level_token', pause.get_host_token),
-    path('get_joined_level_token', pause.get_joined_token),
+    path('set_host_level_token/', pause.set_host_token),
+    path('set_joined_level_token/', pause.set_joined_token),
+    path('get_host_level_token/', pause.get_host_token),
+    path('get_joined_level_token/', pause.get_joined_token),
     # ...
 
     #
