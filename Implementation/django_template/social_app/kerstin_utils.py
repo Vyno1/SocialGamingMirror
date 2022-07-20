@@ -1,4 +1,4 @@
-from social_app.models import Player, Match
+from social_app.models import Player, Match, WeatherTokens
 from social_app.weatherstate import WeatherState
 
 # ----------------------------------------------------{ query errors }--------------------------------------------------
@@ -34,6 +34,17 @@ def get_match(request):
         return None
 
     return match
+
+
+# ----------------------------------------------{ get token table helper }----------------------------------------------
+
+def get_token_table(player: Player):
+    wt: WeatherTokens = WeatherTokens.objects.get(owner=player)
+
+    if not wt:
+        return None
+
+    return wt
 
 
 # ----------------------------------------------{ string to weather state }---------------------------------------------
