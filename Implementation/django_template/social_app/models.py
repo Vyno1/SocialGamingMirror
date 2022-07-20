@@ -24,6 +24,10 @@ class Player(models.Model):
     steps = models.IntegerField(default=0)
     # @Vyno added current scene
     scene: str = models.CharField(max_length=20, default="")
+    # @Vyno string to save, which collectables have been collected
+    collection: str = models.CharField(max_length=20, default="0")
+    # @Vyno number of collected collectibles
+    number_collected: int = models.IntegerField(default=0)
 
     def __str__(self):
         return self.user.username
@@ -72,6 +76,8 @@ class Match(models.Model):
     gravity_objects: str = models.CharField(max_length=20, default="0")
     # @Vyno bool if an object has changed
     gravity_object_updated: bool = models.BooleanField(default=False)
+    # @Vyno bool that gets changed when
+    level_collectable_already_collected: bool = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('host', 'joined_player')
