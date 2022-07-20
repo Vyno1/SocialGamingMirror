@@ -1,26 +1,6 @@
 # views file of @Kerstin
 from django.http import HttpResponse, JsonResponse
-
-from .models import Player, Match
 from .kerstin_utils import *
-
-# -------------------------------------------------{ get match helper }-------------------------------------------------
-from .weatherstate import WeatherState
-
-
-def get_match(request):
-    if not hasattr(request.user, 'player'):
-        return None
-
-    player: Player = request.user.player
-
-    player_is_host: bool = player.host.all().count() == 1
-    match: Match = Match.objects.get(host=player) if player_is_host else Match.objects.get(joined_player=player)
-
-    if not match:
-        return None
-
-    return match
 
 
 # ----------------------------------------------------{ Pause Game }----------------------------------------------------
@@ -147,23 +127,5 @@ def set_joined_token(request) -> HttpResponse:
     match.save()
 
     return HttpResponse(success_message)
-
-
-# -----------------------------------------------{ string to weatherstate }---------------------------------------------
-
-def string_2_weatherstate(string: str) -> WeatherState:
-    if string == "sun":
-        return WeatherState.sun
-    if string == "rain":
-        return WeatherState.sun
-    if string == "snow":
-        return WeatherState.snow
-    if string == "wind":
-        return WeatherState.wind
-    if string == "thunder":
-        return WeatherState.thunder
-
-    print(string)
-    return WeatherState.none
 
 # --------------------------------------------------------{ END }-------------------------------------------------------

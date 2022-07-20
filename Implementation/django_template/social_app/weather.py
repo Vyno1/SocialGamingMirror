@@ -2,9 +2,8 @@
 from django.http import HttpResponse, JsonResponse
 from datetime import date
 
-from .models import WeatherTokens, Player
+from .models import WeatherTokens
 
-from .weatherstate import WeatherState
 from .kerstin_utils import *
 from .friends import get_best_friend
 
@@ -27,13 +26,13 @@ def create_weather_table(request) -> HttpResponse:
 
 def get_weather_table(request):
     if not hasattr(request.user, 'player'):
-        return None  # HttpResponse(not_a_player_message)
+        return None
 
     player: Player = request.user.player
 
     # sql query
     wt = WeatherTokens.objects.get(owner=player)
-    # print("owner of wt: " + wt.__str__())
+
     return wt
 
 
