@@ -37,6 +37,12 @@ def update_object_state(request):
 
 # @Vyno
 def send_update_bool(request):
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
+    if request.method != 'GET':
+        return HttpResponse(f'incorrect request method.')
+    if not hasattr(request.user, 'player'):
+        return HttpResponse(f'user is not a player')
     match: Match = request.user.player.host.all()[0]
     return HttpResponse(f'0: Some Gravity Object has Changed') if match.gravity_object_updated else HttpResponse(
         f'1: No Objects have changed yet')
@@ -44,6 +50,12 @@ def send_update_bool(request):
 
 # @Vyno
 def send_object_gravities(request):
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
+    if request.method != 'GET':
+        return HttpResponse(f'incorrect request method.')
+    if not hasattr(request.user, 'player'):
+        return HttpResponse(f'user is not a player')
     match: Match = request.user.player.host.all()[0]
     match.gravity_object_updated = False
     return HttpResponse(f'0: {match.gravity_objects}')

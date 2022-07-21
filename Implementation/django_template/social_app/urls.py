@@ -1,7 +1,7 @@
 from django.urls import path
 
 from . import views, pause, friends, weather, gamestate, levelloader, invite, lobby, betweenlevels, steps, \
-    gravity_manager
+    gravity_manager, collectables
 
 # TODO: @team add your source files here
 
@@ -73,6 +73,9 @@ urlpatterns = [
     path('get_match_infos/', betweenlevels.get_match_infos),
     path('is_friendship_updated/', betweenlevels.is_friendship_updated),
     path('update_friendship/', betweenlevels.update_friendship),
+    path('check_exit/', betweenlevels.check_exit),
+    path('exit_level/', betweenlevels.exit_level),
+    path('check_continue/', betweenlevels.check_continue),
 
     # ---------------------------------------------{Lobby Stuff}-------------------------------------------------------#
     # @Robin urls for lobby
@@ -110,5 +113,11 @@ urlpatterns = [
     path('setStartState/', gravity_manager.set_start_state),
     path('updateObjectState/', gravity_manager.update_object_state),
     path('askForUpdateBool/', gravity_manager.send_update_bool),
-    path('askForUpdateObjectGravities/', gravity_manager.send_object_gravities)
+    path('askForUpdateObjectGravities/', gravity_manager.send_object_gravities),
+
+    # --------------------------------------------{Collectable Stuff}--------------------------------------------------#
+    # @Vyno
+    path('checkIfColHost/', collectables.check_if_already_collected_host),
+    path('checkIfColJoin/', collectables.check_if_already_collected_joined),
+    path('updateCol/', collectables.update_collection)
 ]
