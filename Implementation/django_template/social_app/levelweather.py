@@ -47,6 +47,9 @@ def use_level_token(request) -> HttpResponse:
 # ----------------------------------------------{ remove token from match }---------------------------------------------
 
 def use_host_token(match: Match) -> int:
+    host_token_state = string_2_weatherstate(match.host_token)
+    set_level_current_to_token(match, host_token_state)
+
     match.host_token = WeatherState.none
     match.save()
 
@@ -54,13 +57,22 @@ def use_host_token(match: Match) -> int:
 
 
 def use_joined_token(match: Match) -> int:
+    joined_token_state = string_2_weatherstate(match.host_token)
+    set_level_current_to_token(match, joined_token_state)
+
     match.joined_token = WeatherState.none
     match.save()
 
     return 0
 
 
-# ----------------------------------------------{ remove token from match }---------------------------------------------
+def set_level_current_to_token(match: Match, state: WeatherState) -> int:
+    match.current_weather = state
+    match.save()
+    return 0
+
+
+# ----------------------------------------------{ remove token from player }--------------------------------------------
 
 def use_token(wt: WeatherTokens, token_id: int) -> int:
     if token_id == 0:
