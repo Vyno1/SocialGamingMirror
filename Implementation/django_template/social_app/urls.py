@@ -40,15 +40,7 @@ urlpatterns = [
     path('pause_game/', pause.pause_game),
     path('resume_game/', pause.resume_game),
     path('get_paused/', pause.get_paused),
-    path('get_level_tokens/', pause.get_level_tokens),
-    path('set_level_tokens/', pause.set_level_tokens),
-    path('set_host_level_token/', pause.set_host_token),
-    path('set_joined_level_token/', pause.set_joined_token),
-    path('get_host_level_token/', pause.get_host_token),
-    path('get_joined_level_token/', pause.get_joined_token),
-    # ...
 
-    #
     # ----------------------------------------------{Weather Stuff}----------------------------------------------------#
     #  @Kerstin urls for weather stuff [source: weather.py]
     path('create_weather_table/', weather.create_weather_table),
@@ -58,12 +50,12 @@ urlpatterns = [
 
     # -------------------------------------------{Level Weather Stuff}-------------------------------------------------#
     #  @Kerstin urls for level weather stuff [source: levelweather.py]
-    path('set_level_current/', levelweather.set_level_current),
     path('get_level_current/', levelweather.get_level_current),
-    path('set_host_level_token/', levelweather.set_host_token),
-    path('set_joined_level_token/', levelweather.set_joined_token),
+    path('set_level_current/', levelweather.set_level_current),
     path('get_host_level_token/', levelweather.get_host_token),
+    path('set_host_level_token/', levelweather.set_host_token),
     path('get_joined_level_token/', levelweather.get_joined_token),
+    path('set_joined_level_token/', levelweather.set_joined_token),
     path('use_weather_token/', levelweather.use_level_token),
 
     # --------------------------------------------{Level Change Stuff}-------------------------------------------------#
