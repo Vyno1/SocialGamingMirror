@@ -1,7 +1,9 @@
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 
 from .kerstin_utils import *
 
+
+# -----------------------------------------------{ current level weather }----------------------------------------------
 
 def set_level_current(request) -> HttpResponse:
     match: Match = get_match(request)
@@ -15,7 +17,19 @@ def set_level_current(request) -> HttpResponse:
     return HttpResponse(success_message)
 
 
-# sets current to token
+def get_level_current(request) -> HttpResponse:
+    match: Match = get_match(request)
+
+    if not match:
+        return HttpResponse(failed_message)
+
+    current: str = match.current_weather
+
+    return HttpResponse(current)
+
+
+# --------------------------------------------------{ use level tokens }------------------------------------------------
+
 def use_level_token(request) -> HttpResponse:
     match: Match = get_match(request)
     token_id: int = request.POST['id']
