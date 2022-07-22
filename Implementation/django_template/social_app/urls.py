@@ -1,7 +1,8 @@
 from django.urls import path
 
-from . import views, pause, friends, weather, gamestate, levelloader, invite, lobby, betweenlevels, steps, \
-    gravity_manager, collectables, levelweather
+
+from . import views, pause, friends, weather, levelloader, invite, lobby, betweenlevels, steps, \
+    gravity_manager, collectables, levelweather, playerSync
 
 # TODO: @team add your source files here
 
@@ -41,23 +42,18 @@ urlpatterns = [
     path('resume_game/', pause.resume_game),
     path('get_paused/', pause.get_paused),
 
+    #
     # ----------------------------------------------{Weather Stuff}----------------------------------------------------#
     #  @Kerstin urls for weather stuff [source: weather.py]
     path('create_weather_table/', weather.create_weather_table),
     path('store_current_weather/', weather.set_current_weather),
     path('load_tokens/', weather.get_weather_info),
     path('store_weather_info/', weather.update_player_weather),
+    # TODO: @team add your paths here
 
-    # -------------------------------------------{Level Weather Stuff}-------------------------------------------------#
-    #  @Kerstin urls for level weather stuff [source: levelweather.py]
-    path('get_level_current/', levelweather.get_level_current),
-    path('set_level_current/', levelweather.set_level_current),
-    path('get_host_level_token/', levelweather.get_host_token),
-    path('set_host_level_token/', levelweather.set_host_token),
-    path('get_joined_level_token/', levelweather.get_joined_token),
-    path('set_joined_level_token/', levelweather.set_joined_token),
-    path('use_weather_token/', levelweather.use_level_token),
-    path('get_level_tokens/', levelweather.get_level_tokens),
+    #
+    # --------------------------------------------{Game State Stuff}---------------------------------------------------#
+    #  @Kerstin urls for pause menu [source: gamestate.py]
 
     # --------------------------------------------{Level Change Stuff}-------------------------------------------------#
     #  @Vyno urls for Level change [source: levelloader.py]
@@ -105,6 +101,13 @@ urlpatterns = [
     path('start/', invite.start),
     path('cancel/', invite.cancel),
     path('checkAnswer/', invite.checkAnswer),
+
+    # ---------------------------------------------{Player sync}--------------------------------------------------------#
+    # @Julian Strings and methods are reversed for better understanding in unity
+    path('sync_players_receive/', playerSync.sync_players_send),
+    path('sync_players_send/', playerSync.sync_players_receive),
+    path('gravity_send/', playerSync.gravity_receive),
+    path('gravity_receive/', playerSync.gravity_send),
 
     # -----------------------------------------------------{Utls for steps]-----------------------------
     # @Robin
