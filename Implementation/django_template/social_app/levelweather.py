@@ -53,6 +53,12 @@ def set_level_tokens(request) -> HttpResponse:
     match.host_token = request.POST['t_host']
     match.joined_token = request.POST['t_join']
 
+    if request.POST['t_host'] == "none":
+        match.host_token_id = -1
+
+    if request.POST['t_join'] == "none":
+        match.joined_token_id = -1
+
     return HttpResponse(success_message)
 
 
@@ -118,7 +124,7 @@ def use_level_token(request) -> HttpResponse:
     print(request.POST['is_host_token'])
     print(type(request.POST['is_host_token']))
 
-    if request.POST['is_host_token'] == 1:
+    if request.POST['is_host_token'] == "true":
         match_success = use_host_token(match)
 
         host_token_table = get_token_table(match.host)
