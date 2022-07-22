@@ -24,6 +24,13 @@ class Player(models.Model):
     steps = models.IntegerField(default=0)
     # @Vyno added current scene
     scene: str = models.CharField(max_length=20, default="")
+    # @Julian added player info
+    position: str = models.CharField(max_length=100, default="")
+    # @Vyno string to save, which collectables have been collected
+    collection: str = models.CharField(max_length=20, default="0")
+    # @Vyno number of collected collectibles
+    number_collected: int = models.IntegerField(default=0)
+
 
     def __str__(self):
         return self.user.username
@@ -63,11 +70,22 @@ class Match(models.Model):
     do_reset = models.BooleanField(default=False)
     do_exit = models.BooleanField(default=False)
     # @Vyno current Scene for swap
-    current_scene: str = models.CharField(max_length=20, default="")
+    current_scene: str = models.CharField(max_length=20, default="0")
     # @Vyno bool for scene swap
     sceneChanges: bool = models.BooleanField(default=False)
     # @Maxi bool for betweenlevels
     friendship_is_updated: bool = models.BooleanField(default=False)
+
+    # @Julian bool for gravity state
+    gravity_normal: bool = models.BooleanField(default=True)
+    other_player_quit: bool = models.BooleanField(default=False)
+    # @Vyno list of all gravityObjects and where they are
+    gravity_objects: str = models.CharField(max_length=20, default="0")
+    # @Vyno bool if an object has changed
+    gravity_object_updated: bool = models.BooleanField(default=False)
+    # @Vyno bool that gets changed when
+    level_collectable_already_collected: bool = models.BooleanField(default=False)
+
 
     class Meta:
         unique_together = ('host', 'joined_player')
