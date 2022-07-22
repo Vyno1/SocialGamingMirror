@@ -1,6 +1,8 @@
 from django.urls import path
 
-from . import views, pause, friends, weather, gamestate, levelloader, invite, lobby, betweenlevels, playerSync
+
+from . import views, pause, friends, weather, gamestate, levelloader, invite, lobby, betweenlevels, steps, \
+    gravity_manager, collectables, playerSync
 
 # TODO: @team add your source files here
 
@@ -72,6 +74,9 @@ urlpatterns = [
     path('get_match_infos/', betweenlevels.get_match_infos),
     path('is_friendship_updated/', betweenlevels.is_friendship_updated),
     path('update_friendship/', betweenlevels.update_friendship),
+    path('check_exit/', betweenlevels.check_exit),
+    path('exit_level/', betweenlevels.exit_level),
+    path('check_continue/', betweenlevels.check_continue),
 
     # ---------------------------------------------{Lobby Stuff}-------------------------------------------------------#
     # @Robin urls for lobby
@@ -81,10 +86,14 @@ urlpatterns = [
     path('setJoinedReady/', lobby.setJoinedReady),
     path('checkJoinedReady/', lobby.checkJoinedReady),
     path('startGame/', lobby.startGame),
+    path('checkIfstarted/', lobby.checkIfStarted),
     path('leaveLobby/', lobby.leaveLobby),
     path('isHost/', lobby.isHost),
     path('checkIfAlone/', lobby.checkIfAlone),
     path('isFriend/', lobby.isFriend),
+
+    path('setSkin/', lobby.setSkin),
+    path('checkOtherSkin/', lobby.checkOtherSkin),
 
     # -------------------------------------------------{Urls for Invites}------------------------------
     # @Robin
@@ -95,10 +104,28 @@ urlpatterns = [
     path('start/', invite.start),
     path('cancel/', invite.cancel),
     path('checkAnswer/', invite.checkAnswer),
+
     # ---------------------------------------------{Player sync}--------------------------------------------------------#
     # @Julian Strings and methods are reversed for better understanding in unity
     path('sync_players_receive/', playerSync.sync_players_send),
     path('sync_players_send/', playerSync.sync_players_receive),
     path('gravity_send/', playerSync.gravity_receive),
     path('gravity_receive/', playerSync.gravity_send),
+
+    # -----------------------------------------------------{Utls for steps]-----------------------------
+    # @Robin
+    path('getSteps/', steps.getSteps),
+
+    # --------------------------------------------{Gravity Object Stuff}-----------------------------------------------#
+    # @Vyno
+    path('setStartState/', gravity_manager.set_start_state),
+    path('updateObjectState/', gravity_manager.update_object_state),
+    path('askForUpdateBool/', gravity_manager.send_update_bool),
+    path('askForUpdateObjectGravities/', gravity_manager.send_object_gravities),
+
+    # --------------------------------------------{Collectable Stuff}--------------------------------------------------#
+    # @Vyno
+    path('checkIfColHost/', collectables.check_if_already_collected_host),
+    path('checkIfColJoin/', collectables.check_if_already_collected_joined),
+    path('updateCol/', collectables.update_collection)
 ]

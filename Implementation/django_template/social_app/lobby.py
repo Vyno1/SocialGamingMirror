@@ -90,21 +90,47 @@ def checkJoinedReady(request) -> HttpResponse:
     else:
         return HttpResponse(f'1:')
 
+
 def startGame(request) -> HttpResponse:
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
+    if request.method != 'POST':
+        return HttpResponse(f'incorrect request method.')
     if not hasattr(request.user, 'player'):
         return HttpResponse(f'user is not a player')
 
     player: Player = request.user.player
-    match: Match = Match.objects.get(user__username=player.user.username)
-    if match.guest_ready:
-        match.has_started = True
-        match.save()
-        return HttpResponse(f'0:')
-    else:
+    try:
+        match: Match = Match.objects.get(host=player)
+        if match.guest_ready:
+            match.has_started = True
+            match.current_scene = request.POST['level']
+            match.save()
+            return HttpResponse(f'0:')
+        else:
+            return HttpResponse(f'lobby not ready')
+    except ObjectDoesNotExist:
         return HttpResponse(f'lobby not ready')
 
+def checkIfStarted(request) -> HttpResponse:
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
+    if request.method != 'POST':
+        return HttpResponse(f'incorrect request method.')
+    if not hasattr(request.user, 'player'):
+        return HttpResponse(f'user is not a player')
+
+    player: Player = request.user.player
+    try:
+        match: Match = Match.objects.get(joined_player=player)
+        if match.has_started:
+            response = f'0:'
+            response += f'{match.current_scene}'
+            return HttpResponse(response)
+        else:
+            return HttpResponse(f'lobby not ready')
+    except ObjectDoesNotExist:
+        return HttpResponse(f'lobby not ready')
 
 def leaveLobby(request) -> HttpResponse:
     if not request.user.is_authenticated:
@@ -198,5 +224,45 @@ def isFriend(request) -> HttpResponse:
         except ObjectDoesNotExist:
             return HttpResponse(f'1:')
 
-    return HttpResponse(f'0:')
+    return HttpResponse(f'0: {friendship.skins_unlocked}')
+
+def setSkin(request) -> HttpResponse:
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
+    if request.method != 'POST':
+        return HttpResponse(f'incorrect request method.')
+    if not hasattr(request.user, 'player'):
+        return HttpResponse(f'user is not a player')
+
+    player = request.user.player
+    try:
+        if isHostHelper(player):
+            match: Match = Match.objects.get(host=player)
+            match.host_skin = request.POST['skin']
+            match.save()
+        else:
+            match: Match = Match.objects.get(joined_player=player)
+            match.guest_skin = request.POST['skin']
+            match.save()
+        return HttpResponse(f'0:')
+    except ObjectDoesNotExist:
+        return HttpResponse(f'1: kein match')
+
+def checkOtherSkin(request) -> HttpResponse:
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
+    if not hasattr(request.user, 'player'):
+        return HttpResponse(f'user is not a player')
+
+    player = request.user.player
+    try:
+        if isHostHelper(player):
+            match: Match = Match.objects.get(host=player)
+            return HttpResponse(f'0: {match.guest_skin}')
+        else:
+            match: Match = Match.objects.get(joined_player=player)
+            return HttpResponse(f'0: {match.host_skin}')
+    except ObjectDoesNotExist:
+        return HttpResponse(f'1: kein match')
+
 
