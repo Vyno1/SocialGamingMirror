@@ -58,35 +58,32 @@ def set_level_tokens(request) -> HttpResponse:
 
 
 def get_host_token(request) -> HttpResponse:
-    # print("get host was requested by " + request.user.username)
-
     match: Match = get_match(request)
 
     if not match:
         return HttpResponse(failed_message)
 
-    return HttpResponse(str(match.host_token))
+    resp: str = str(match.host_token) + "#" + str(match.host_token_id)
+    return HttpResponse(resp)
 
 
 def get_joined_token(request) -> HttpResponse:
-    # print("get joined was requested by " + request.user.username)
-
     match: Match = get_match(request)
 
     if not match:
         return HttpResponse(failed_message)
 
-    return HttpResponse(str(match.joined_token))
+    resp: str = str(match.joined_token) + "#" + str(match.joined_token_id)
+    return HttpResponse(resp)
 
 
 def set_host_token(request) -> HttpResponse:
-    print("set host was requested by " + request.user.username)
-
     match: Match = get_match(request)
 
     if not match:
         return HttpResponse(failed_message)
 
+    match.host_token_id = request.POST['id']
     state: str = request.POST['weather']
     match.host_token = string_2_weatherstate(state)
 
@@ -96,13 +93,12 @@ def set_host_token(request) -> HttpResponse:
 
 
 def set_joined_token(request) -> HttpResponse:
-    print("set joined was requested by " + request.user.username)
-
     match: Match = get_match(request)
 
     if not match:
         return HttpResponse(failed_message)
 
+    match.joined_token_id = request.POST['id']
     state: str = request.POST['weather']
     match.joined_token = string_2_weatherstate(state)
 
