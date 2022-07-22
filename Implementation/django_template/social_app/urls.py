@@ -1,7 +1,7 @@
 from django.urls import path
 
 from . import views, pause, friends, weather, gamestate, levelloader, invite, lobby, betweenlevels, steps, \
-    gravity_manager, collectables, exit_and_time
+    gravity_manager, collectables, exit_and_time, playerSync
 
 # TODO: @team add your source files here
 
@@ -111,6 +111,13 @@ urlpatterns = [
     path('start/', invite.start),
     path('cancel/', invite.cancel),
     path('checkAnswer/', invite.checkAnswer),
+
+    # ---------------------------------------------{Player sync}--------------------------------------------------------#
+    # @Julian Strings and methods are reversed for better understanding in unity
+    path('sync_players_receive/', playerSync.sync_players_send),
+    path('sync_players_send/', playerSync.sync_players_receive),
+    path('gravity_send/', playerSync.gravity_receive),
+    path('gravity_receive/', playerSync.gravity_send),
 
     # -----------------------------------------------------{Utls for steps]-----------------------------
     # @Robin
