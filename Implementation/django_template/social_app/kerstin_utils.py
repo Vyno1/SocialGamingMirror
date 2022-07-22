@@ -53,7 +53,7 @@ def string_2_weatherstate(string: str) -> WeatherState:
     if string == "sun":
         return WeatherState.sun
     if string == "rain":
-        return WeatherState.sun
+        return WeatherState.rain
     if string == "snow":
         return WeatherState.snow
     if string == "wind":

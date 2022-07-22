@@ -30,19 +30,18 @@ def get_level_current(request) -> HttpResponse:
 
 # ---------------------------------------------------{ Level Tokens }---------------------------------------------------
 
-def get_level_tokens(request) -> JsonResponse:
+def get_level_tokens(request) -> HttpResponse:
     match: Match = get_match(request)
 
     if not match:
-        # safe=False so that Json doesn't have to return a dict
-        return JsonResponse(failed_message, safe=False)
+        return HttpResponse(failed_message)
 
-    t1 = match.host_token
-    t2 = match.joined_token
+    t_host = match.host_token
+    t_joined = match.joined_token
 
-    data: dict = {"t1": t1, "t2": t2}
+    resp: str = str(t_host) + "#" + str(t_joined)
 
-    return JsonResponse(data)
+    return HttpResponse(resp)
 
 
 def set_level_tokens(request) -> HttpResponse:
@@ -51,8 +50,8 @@ def set_level_tokens(request) -> HttpResponse:
     if not match:
         return HttpResponse(failed_message)
 
-    match.host_token = request.POST['t1']
-    match.joined_token = request.POST['t2']
+    match.host_token = request.POST['t_host']
+    match.joined_token = request.POST['t_join']
 
     return HttpResponse(success_message)
 
@@ -115,6 +114,9 @@ def use_level_token(request) -> HttpResponse:
 
     if not match:
         return HttpResponse(failed_message + ": no match")
+
+    print(request.POST['is_host_token'])
+    print(type(request.POST['is_host_token']))
 
     if request.POST['is_host_token'] == 1:
         match_success = use_host_token(match)

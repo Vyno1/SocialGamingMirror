@@ -57,6 +57,7 @@ urlpatterns = [
     path('get_joined_level_token/', levelweather.get_joined_token),
     path('set_joined_level_token/', levelweather.set_joined_token),
     path('use_weather_token/', levelweather.use_level_token),
+    path('get_level_tokens/', levelweather.get_level_tokens),
 
     # --------------------------------------------{Level Change Stuff}-------------------------------------------------#
     #  @Vyno urls for Level change [source: levelloader.py]
