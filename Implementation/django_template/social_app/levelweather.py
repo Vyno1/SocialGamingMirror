@@ -114,9 +114,9 @@ def use_level_token(request) -> HttpResponse:
     token_id: int = request.POST['id']
 
     if not match:
-        return HttpResponse(failed_message)
+        return HttpResponse(failed_message + ": no match")
 
-    if request.POST['is_host_token']:
+    if request.POST['is_host_token'] == 1:
         match_success = use_host_token(match)
 
         host_token_table = get_token_table(match.host)
@@ -124,7 +124,7 @@ def use_level_token(request) -> HttpResponse:
 
         if match_success and host_success:
             return HttpResponse(success_message)
-        return HttpResponse(failed_message)
+        return HttpResponse(failed_message + ": token removal failed")
 
     # else is joined player
     match_success = use_joined_token(match)
@@ -139,35 +139,35 @@ def use_level_token(request) -> HttpResponse:
 
 # ----------------------------------------------{ remove token from match }---------------------------------------------
 
-def use_host_token(match: Match) -> int:
+def use_host_token(match: Match) -> bool:
     host_token_state = string_2_weatherstate(match.host_token)
     set_level_current_to_token(match, host_token_state)
 
     match.host_token = WeatherState.none
     match.save()
 
-    return 0
+    return True
 
 
-def use_joined_token(match: Match) -> int:
+def use_joined_token(match: Match) -> bool:
     joined_token_state = string_2_weatherstate(match.host_token)
     set_level_current_to_token(match, joined_token_state)
 
     match.joined_token = WeatherState.none
     match.save()
 
-    return 0
+    return True
 
 
-def set_level_current_to_token(match: Match, state: WeatherState) -> int:
+def set_level_current_to_token(match: Match, state: WeatherState) -> bool:
     match.current_weather = state
     match.save()
-    return 0
+    return True
 
 
 # ----------------------------------------------{ remove token from player }--------------------------------------------
 
-def use_token(wt: WeatherTokens, token_id: int) -> int:
+def use_token(wt: WeatherTokens, token_id: int) -> bool:
     if token_id == 0:
         wt.token0 = WeatherState.none
     if token_id == 1:
@@ -181,4 +181,4 @@ def use_token(wt: WeatherTokens, token_id: int) -> int:
     if token_id == 5:
         wt.used_shared = True
 
-    return 0
+    return True
