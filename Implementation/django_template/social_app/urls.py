@@ -1,6 +1,5 @@
 from django.urls import path
 
-
 from . import views, pause, friends, weather, levelloader, invite, lobby, betweenlevels, steps, \
     gravity_manager, collectables, levelweather, playerSync
 
@@ -49,7 +48,17 @@ urlpatterns = [
     path('store_current_weather/', weather.set_current_weather),
     path('load_tokens/', weather.get_weather_info),
     path('store_weather_info/', weather.update_player_weather),
-    # TODO: @team add your paths here
+
+    # -------------------------------------------{Level Weather Stuff}-------------------------------------------------#
+    #  @Kerstin urls for level weather stuff [source: levelweather.py]
+    path('get_level_current/', levelweather.get_level_current),
+    path('set_level_current/', levelweather.set_level_current),
+    path('get_host_level_token/', levelweather.get_host_token),
+    path('set_host_level_token/', levelweather.set_host_token),
+    path('get_joined_level_token/', levelweather.get_joined_token),
+    path('set_joined_level_token/', levelweather.set_joined_token),
+    path('use_weather_token/', levelweather.use_level_token),
+    path('get_level_tokens/', levelweather.get_level_tokens),
 
     #
     # --------------------------------------------{Game State Stuff}---------------------------------------------------#
