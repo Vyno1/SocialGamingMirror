@@ -1,7 +1,9 @@
 from django.urls import path
 
-from . import views, pause, friends, weather, levelloader, invite, lobby, betweenlevels, steps, \
-    gravity_manager, collectables, levelweather, playerSync, exit_and_time
+from . import views, pause, friends, weather, gamestate, levelloader, invite, lobby, betweenlevels, steps, \
+    gravity_manager, collectables, exit_and_time, playerSync, ingame_button, levelweather
+
+# TODO: @team add your source files here
 
 urlpatterns = [
     #
@@ -141,5 +143,10 @@ urlpatterns = [
     # @Vyno
     path('checkIfColHost/', collectables.check_if_already_collected_host),
     path('checkIfColJoin/', collectables.check_if_already_collected_joined),
-    path('updateCol/', collectables.update_collection)
+    path('updateCol/', collectables.update_collection),
+    # --------------------------------------------{Ingame Button Stuff}------------------------------------------------#
+    # @Vyno
+    path('sendButtonUpdate/', ingame_button.update_object_state),
+    path('askForButtonUpdate/', ingame_button.send_update_bool),
+    path('updateButtons/', ingame_button.send_button_states)
 ]
