@@ -24,7 +24,6 @@ def update_level(request):
     if is_reload:
         match.is_paused = False
 
-    print(player.scene)
     match.save()
     player.save()
     return HttpResponse(f'0: Scene has been updated.')
