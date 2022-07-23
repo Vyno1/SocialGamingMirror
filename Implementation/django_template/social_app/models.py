@@ -33,7 +33,6 @@ class Player(models.Model):
     # @Vyno number of collected collectibles
     number_collected: int = models.IntegerField(default=0)
 
-
     def __str__(self):
         return self.user.username
 
@@ -88,9 +87,13 @@ class Match(models.Model):
     gravity_objects: str = models.CharField(max_length=20, default="0")
     # @Vyno bool if an object has changed
     gravity_object_updated: bool = models.BooleanField(default=False)
-    # @Vyno bool that gets changed when
+    # @Vyno bool that gets changed when collectable was already collected
     level_collectable_already_collected: bool = models.BooleanField(default=False)
-
+    # @Vyno list of all button objects
+    button_objects: str = models.CharField(max_length=20, default="0")
+    # @Vyno bool that gets changed, when a button was pressed in the scene
+    button_object_updated_from_host: bool = models.BooleanField(default=False)
+    button_object_updated_from_join: bool = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('host', 'joined_player')
