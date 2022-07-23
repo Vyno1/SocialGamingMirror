@@ -1,9 +1,7 @@
 from django.urls import path
 
 from . import views, pause, friends, weather, levelloader, invite, lobby, betweenlevels, steps, \
-    gravity_manager, collectables, levelweather, playerSync
-
-# TODO: @team add your source files here
+    gravity_manager, collectables, levelweather, playerSync, exit_and_time
 
 urlpatterns = [
     #
@@ -19,6 +17,14 @@ urlpatterns = [
     path('host_match/', views.host_match),
     path('join_match/', views.join_match),
     path('end_match/', views.end_match),
+
+    # --------------------------------------------{Exit / Time Stuff}------------------------------------------------- #
+
+    # @Maxi
+    path('handle_quit/', exit_and_time.handle_quit),
+    path('set_quit/', exit_and_time.set_quit),
+    path('get_localtime/', exit_and_time.get_localtime),
+    path('send_localtime/', exit_and_time.send_localtime),
 
     #
     # --------------------------------------------{Friendship Stuff}---------------------------------------------------#

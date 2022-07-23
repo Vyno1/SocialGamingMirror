@@ -20,6 +20,8 @@ class Player(models.Model):
     levels_unlocked = models.IntegerField(default=0)
     # @Maxi added info-screen bool
     show_friend_info_screen: bool = models.BooleanField(default=True)
+    # @Maxi added is_day bool
+    is_day: bool = models.BooleanField(default=False)
     # @Kerstin added steps
     steps = models.IntegerField(default=0)
     # @Vyno added current scene
@@ -81,6 +83,7 @@ class Match(models.Model):
     # @Julian bool for gravity state
     gravity_normal: bool = models.BooleanField(default=True)
     other_player_quit: bool = models.BooleanField(default=False)
+    other_player_closed_game: bool = models.BooleanField(default=False)
     # @Vyno list of all gravityObjects and where they are
     gravity_objects: str = models.CharField(max_length=20, default="0")
     # @Vyno bool if an object has changed
