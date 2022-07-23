@@ -1,9 +1,7 @@
 from django.urls import path
 
-from . import views, pause, friends, weather, gamestate, levelloader, invite, lobby, betweenlevels, steps, \
-    gravity_manager, collectables, exit_and_time, playerSync
-
-# TODO: @team add your source files here
+from . import views, pause, friends, weather, levelloader, invite, lobby, betweenlevels, steps, \
+    gravity_manager, collectables, levelweather, playerSync, exit_and_time
 
 urlpatterns = [
     #
@@ -46,11 +44,8 @@ urlpatterns = [
     # --------------------------------------------{Pause Menu Stuff}---------------------------------------------------#
     #  @Kerstin urls for pause menu [source: pause.py]
     path('pause_game/', pause.pause_game),
-    path('get_paused/', pause.get_paused),
     path('resume_game/', pause.resume_game),
-    path('reset_game/', pause.reset_game),
-    path('exit_game/', pause.exit_game),
-    # ...
+    path('get_paused/', pause.get_paused),
 
     #
     # ----------------------------------------------{Weather Stuff}----------------------------------------------------#
@@ -59,7 +54,18 @@ urlpatterns = [
     path('store_current_weather/', weather.set_current_weather),
     path('load_tokens/', weather.get_weather_info),
     path('store_weather_info/', weather.update_player_weather),
-    # TODO: @team add your paths here
+
+    # -------------------------------------------{Level Weather Stuff}-------------------------------------------------#
+    #  @Kerstin urls for level weather stuff [source: levelweather.py]
+    path('get_level_current/', levelweather.get_level_current),
+    path('set_level_current/', levelweather.set_level_current),
+    path('get_host_level_token/', levelweather.get_host_token),
+    path('set_host_level_token/', levelweather.set_host_token),
+    path('get_joined_level_token/', levelweather.get_joined_token),
+    path('set_joined_level_token/', levelweather.set_joined_token),
+    path('use_weather_token/', levelweather.use_level_token),
+    path('get_level_tokens/', levelweather.get_level_tokens),
+    path('set_level_tokens/', levelweather.set_level_tokens),
 
     #
     # --------------------------------------------{Game State Stuff}---------------------------------------------------#
