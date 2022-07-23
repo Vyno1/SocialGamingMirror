@@ -122,25 +122,24 @@ def use_level_token(request) -> HttpResponse:
         return HttpResponse(failed_message + ": no match")
 
     print(request.POST['is_host_token'])
-    print(type(request.POST['is_host_token']))
 
     if request.POST['is_host_token'] == "true":
         match_success = use_host_token(match)
 
-        host_token_table = get_token_table(match.host)
-        host_success = use_token(host_token_table, token_id)
+        # host_token_table = get_token_table(match.host)
+        # host_success = use_token(host_token_table, token_id)
 
-        if match_success and host_success:
+        if match_success:  # and host_success:
             return HttpResponse(success_message)
         return HttpResponse(failed_message + ": token removal failed")
 
     # else is joined player
     match_success = use_joined_token(match)
 
-    joined_token_table = get_token_table(match.joined_player)
-    joined_success = use_token(joined_token_table, token_id)
+    # joined_token_table = get_token_table(match.joined_player)
+    # joined_success = use_token(joined_token_table, token_id)
 
-    if match_success and joined_success:
+    if match_success:  # and joined_success:
         return HttpResponse(success_message)
     return HttpResponse(failed_message)
 
@@ -149,19 +148,29 @@ def use_level_token(request) -> HttpResponse:
 
 def use_host_token(match: Match) -> bool:
     host_token_state = string_2_weatherstate(match.host_token)
+    if host_token_state == "none":
+        return False
+
     set_level_current_to_token(match, host_token_state)
 
+    # reset tokens to default
     match.host_token = WeatherState.none
+    match.host_token_id = -1
     match.save()
 
     return True
 
 
 def use_joined_token(match: Match) -> bool:
-    joined_token_state = string_2_weatherstate(match.host_token)
+    joined_token_state = string_2_weatherstate(match.joined_token)
+    if joined_token_state == "none":
+        return False
+
     set_level_current_to_token(match, joined_token_state)
 
+    # reset tokens to default
     match.joined_token = WeatherState.none
+    match.joined_token_id = -1
     match.save()
 
     return True
