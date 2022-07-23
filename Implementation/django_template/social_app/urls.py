@@ -2,7 +2,7 @@ from django.urls import path
 
 
 from . import views, pause, friends, weather, gamestate, levelloader, invite, lobby, betweenlevels, steps, \
-    gravity_manager, collectables, playerSync
+    gravity_manager, collectables, exit_and_time, playerSync, ingame_button, levelweather
 
 # TODO: @team add your source files here
 
@@ -20,6 +20,14 @@ urlpatterns = [
     path('host_match/', views.host_match),
     path('join_match/', views.join_match),
     path('end_match/', views.end_match),
+
+    # --------------------------------------------{Exit / Time Stuff}------------------------------------------------- #
+
+    # @Maxi
+    path('handle_quit/', exit_and_time.handle_quit),
+    path('set_quit/', exit_and_time.set_quit),
+    path('get_localtime/', exit_and_time.get_localtime),
+    path('send_localtime/', exit_and_time.send_localtime),
 
     #
     # --------------------------------------------{Friendship Stuff}---------------------------------------------------#
@@ -42,9 +50,7 @@ urlpatterns = [
     path('pause_game/', pause.pause_game),
     path('get_paused/', pause.get_paused),
     path('resume_game/', pause.resume_game),
-    path('reset_game/', pause.reset_game),
-    path('exit_game/', pause.exit_game),
-    # ...
+    path('get_paused/', pause.get_paused),
 
     #
     # ----------------------------------------------{Weather Stuff}----------------------------------------------------#
@@ -53,7 +59,18 @@ urlpatterns = [
     path('store_current_weather/', weather.set_current_weather),
     path('load_tokens/', weather.get_weather_info),
     path('store_weather_info/', weather.update_player_weather),
-    # TODO: @team add your paths here
+
+    # -------------------------------------------{Level Weather Stuff}-------------------------------------------------#
+    #  @Kerstin urls for level weather stuff [source: levelweather.py]
+    path('get_level_current/', levelweather.get_level_current),
+    path('set_level_current/', levelweather.set_level_current),
+    path('get_host_level_token/', levelweather.get_host_token),
+    path('set_host_level_token/', levelweather.set_host_token),
+    path('get_joined_level_token/', levelweather.get_joined_token),
+    path('set_joined_level_token/', levelweather.set_joined_token),
+    path('use_weather_token/', levelweather.use_level_token),
+    path('get_level_tokens/', levelweather.get_level_tokens),
+    path('set_level_tokens/', levelweather.set_level_tokens),
 
     #
     # --------------------------------------------{Game State Stuff}---------------------------------------------------#
@@ -141,6 +158,9 @@ urlpatterns = [
     path('checkIfColHost/', collectables.check_if_already_collected_host),
     path('checkIfColJoin/', collectables.check_if_already_collected_joined),
     path('updateCol/', collectables.update_collection),
-    # @Robin
-    path('getCollectables/', collectables.getCollectables),
+    # --------------------------------------------{Ingame Button Stuff}------------------------------------------------#
+    # @Vyno
+    path('sendButtonUpdate/', ingame_button.update_object_state),
+    path('askForButtonUpdate/', ingame_button.send_update_bool),
+    path('updateButtons/', ingame_button.send_button_states)
 ]

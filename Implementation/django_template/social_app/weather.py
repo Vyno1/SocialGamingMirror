@@ -2,9 +2,8 @@
 from django.http import HttpResponse, JsonResponse
 from datetime import date
 
-from .models import WeatherTokens, Player
+from .models import WeatherTokens
 
-from .weatherstate import WeatherState
 from .kerstin_utils import *
 from .friends import get_best_friend
 
@@ -27,14 +26,13 @@ def create_weather_table(request) -> HttpResponse:
 
 def get_weather_table(request):
     if not hasattr(request.user, 'player'):
-        return None  # HttpResponse(not_a_player_message)
+        return None
 
     player: Player = request.user.player
-    print(player)
 
     # sql query
     wt = WeatherTokens.objects.get(owner=player)
-    # print("owner of wt: " + wt.__str__())
+
     return wt
 
 
@@ -80,7 +78,6 @@ def get_weather_info(request) -> JsonResponse:
     # | merges 2 dictionaries (if x is contained in both, it takes x from right dict)
     data: dict = tokens | {"claimed": claimed, "unlocked_shared": unlocked_shared, "best_friend": best_friend,
                            "tf": tf}
-    print(data)
     return JsonResponse(data)
 
 
@@ -120,7 +117,6 @@ def has_unlocked_shared(player) -> bool:
 
 def load_friend_token(request) -> WeatherState:
     bf: Player = get_best_friend(request.user.player)
-    print("bf = " + str(bf))
 
     # bf == None means you sadly have no good friends
     if bf is None:
@@ -166,6 +162,5 @@ def update_player_weather(request) -> HttpResponse:
     wt.save()
 
     return HttpResponse(success_message)
-
 
 # --------------------------------------------------------{ END }-------------------------------------------------------

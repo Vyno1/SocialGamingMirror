@@ -20,10 +20,12 @@ class Player(models.Model):
     levels_unlocked = models.IntegerField(default=1)
     # @Maxi added info-screen bool
     show_friend_info_screen: bool = models.BooleanField(default=True)
+    # @Maxi added is_day bool
+    is_day: bool = models.BooleanField(default=False)
     # @Kerstin added steps
     steps = models.IntegerField(default=0)
     # @Vyno added current scene
-    scene: str = models.CharField(max_length=20, default="")
+    scene: str = models.CharField(max_length=20, default="0")
     # @Julian added player info
     position: str = models.CharField(max_length=100, default="")
     # @Vyno string to save, which collectables have been collected
@@ -32,7 +34,6 @@ class Player(models.Model):
     number_collected: int = models.IntegerField(default=0)
     # @Robin Gps-Coordinates for walk2Gether
     coordinates: str = models.CharField(max_length=30, default="0")
-
 
     def __str__(self):
         return self.user.username
@@ -65,12 +66,14 @@ class Match(models.Model):
 
     has_started = models.BooleanField(default=False)
     is_over = models.BooleanField(default=False)
-    # @Kerstin removed ball attributes
-    # TODO: Game State variables
     # @Kerstin pause menu fields
     is_paused = models.BooleanField(default=False)
-    do_reset = models.BooleanField(default=False)
-    do_exit = models.BooleanField(default=False)
+    # @Kerstin level token fields
+    host_token = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
+    host_token_id = models.IntegerField(default=-1)
+    joined_token = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
+    joined_token_id = models.IntegerField(default=-1)
+    current_weather = models.CharField(choices=WeatherState.choices, default=WeatherState.none, max_length=10)
     # @Vyno current Scene for swap
     current_scene: str = models.CharField(max_length=20, default="0")
     # @Vyno bool for scene swap
@@ -81,13 +84,18 @@ class Match(models.Model):
     # @Julian bool for gravity state
     gravity_normal: bool = models.BooleanField(default=True)
     other_player_quit: bool = models.BooleanField(default=False)
+    other_player_closed_game: bool = models.BooleanField(default=False)
     # @Vyno list of all gravityObjects and where they are
     gravity_objects: str = models.CharField(max_length=20, default="0")
     # @Vyno bool if an object has changed
     gravity_object_updated: bool = models.BooleanField(default=False)
-    # @Vyno bool that gets changed when
+    # @Vyno bool that gets changed when collectable was already collected
     level_collectable_already_collected: bool = models.BooleanField(default=False)
-
+    # @Vyno list of all button objects
+    button_objects: str = models.CharField(max_length=20, default="0")
+    # @Vyno bool that gets changed, when a button was pressed in the scene
+    button_object_updated_from_host: bool = models.BooleanField(default=False)
+    button_object_updated_from_join: bool = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('host', 'joined_player')
@@ -170,6 +178,7 @@ class Friendship(models.Model):
         Player,
         on_delete=models.CASCADE,
         related_name='friends',
+        default=None
     )
     player2 = models.ForeignKey(
         Player,
