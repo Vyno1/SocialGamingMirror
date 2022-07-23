@@ -21,7 +21,6 @@ def update_level(request):
     match = request.user.player.host.all()[0]
     match.current_scene = next_level
     match.sceneChanges = True
-    print(player.scene)
     match.save()
     player.save()
     return HttpResponse(f'0: Scene has been updated.')
