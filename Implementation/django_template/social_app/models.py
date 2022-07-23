@@ -189,7 +189,7 @@ class Friendship(models.Model):
     mutual = models.BooleanField(default=False)
 
     # Der Char an der Stelle i represented, ob Skin i schon freigeschaltet wurde als bool
-    skins_unlocked = models.CharField(default="00000000", max_length=10)
+    skins_unlocked = models.CharField(default="100000000", max_length=10)
     skin_drop_chance = models.FloatField(default=0.05)
     step_multiplier = models.FloatField(default=1.0)
 

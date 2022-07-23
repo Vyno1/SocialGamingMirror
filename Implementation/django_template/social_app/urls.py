@@ -158,6 +158,7 @@ urlpatterns = [
     path('checkIfColHost/', collectables.check_if_already_collected_host),
     path('checkIfColJoin/', collectables.check_if_already_collected_joined),
     path('updateCol/', collectables.update_collection),
+    path('getCollectables/', collectables.getCollectables),
     # --------------------------------------------{Ingame Button Stuff}------------------------------------------------#
     # @Vyno
     path('sendButtonUpdate/', ingame_button.update_object_state),
