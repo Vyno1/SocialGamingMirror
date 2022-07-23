@@ -15,12 +15,15 @@ def update_level(request):
     is_reload: bool = True if request.POST['isReload'] == 'True' else False
     player = request.user.player
     if next_level == player.scene and not is_reload:
-        print("help")
         return HttpResponse(f'1: Scene is already the same!')
     request.user.player.scene = next_level
     match = request.user.player.host.all()[0]
     match.current_scene = next_level
     match.sceneChanges = True
+
+    if is_reload:
+        match.is_paused = False
+
     match.save()
     player.save()
     return HttpResponse(f'0: Scene has been updated.')
@@ -74,4 +77,3 @@ def subtract_steps(request):
         return HttpResponse(f'0: Steps have been deducted')
     else:
         return HttpResponse(f'1: Not enough steps to be deducted')
-
