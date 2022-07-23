@@ -224,7 +224,7 @@ def isFriend(request) -> HttpResponse:
         except ObjectDoesNotExist:
             return HttpResponse(f'1:')
 
-    return HttpResponse(f'0: {friendship.skins_unlocked}')
+    return HttpResponse(f'0:' + f'{friendship.skins_unlocked}')
 
 def setSkin(request) -> HttpResponse:
     if not request.user.is_authenticated:

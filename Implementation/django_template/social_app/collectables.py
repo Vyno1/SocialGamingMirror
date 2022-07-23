@@ -74,3 +74,12 @@ def update_collection(request):
         print(collection)
         host.save()
         return HttpResponse(f'0: Updated collection for host')
+
+def getCollectables(request) -> HttpResponse:
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
+    if not hasattr(request.user, 'player'):
+        return HttpResponse(f'user is not a player')
+    player: Player = request.user.player
+
+    return HttpResponse(f'0: {player.number_collected}')
