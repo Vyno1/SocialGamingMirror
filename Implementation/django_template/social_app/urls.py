@@ -33,6 +33,7 @@ urlpatterns = [
     path('update_friendship_level/', friends.update_friendship_level),
     # @Robin urls for invite and skinselect
     path('get_mutualfriends/', friends.get_mutualfriends),
+    path('get_mutualfriendsWithCoords/', friends.get_mutualfriendsWithCoords),
     # ...
 
     #
@@ -115,6 +116,18 @@ urlpatterns = [
     # -----------------------------------------------------{Utls for steps]-----------------------------
     # @Robin
     path('getSteps/', steps.getSteps),
+    path('setSteps/', steps.setSteps),
+    path('sendCoords/', steps.sendCoords),
+    path('getFriendSteps/' , steps.getFriendSteps),
+    path('inviteFriendWalk/', steps.inviteFriendWalk),
+    path('checkIfInvitedWalk/', steps.checkIfInvitedWalk),
+    path('acceptInviteWalk/', steps.acceptInviteWalk),
+    path('declineInviteWalk/', steps.declineInviteWalk),
+    path('cancelWalk/', steps.cancelWalk),
+    path('checkAnswerWalk/', steps.checkAnswerWalk),
+    path('goBack/', steps.goBack),
+    path('leaveWalk/', steps.leaveWalk),
+    path('checkIfAlone/', steps.checkIfAlone),
 
     # --------------------------------------------{Gravity Object Stuff}-----------------------------------------------#
     # @Vyno
@@ -127,5 +140,7 @@ urlpatterns = [
     # @Vyno
     path('checkIfColHost/', collectables.check_if_already_collected_host),
     path('checkIfColJoin/', collectables.check_if_already_collected_joined),
-    path('updateCol/', collectables.update_collection)
+    path('updateCol/', collectables.update_collection),
+    # @Robin
+    path('getCollectables/', collectables.getCollectables),
 ]
