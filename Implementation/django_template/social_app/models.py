@@ -17,7 +17,7 @@ class Player(models.Model):
         primary_key=True,
     )
     # @Maxi added unlocked levels
-    levels_unlocked = models.IntegerField(default=0)
+    levels_unlocked = models.IntegerField(default=1)
     # @Maxi added info-screen bool
     show_friend_info_screen: bool = models.BooleanField(default=True)
     # @Maxi added is_day bool
@@ -25,7 +25,7 @@ class Player(models.Model):
     # @Kerstin added steps
     steps = models.IntegerField(default=0)
     # @Vyno added current scene
-    scene: str = models.CharField(max_length=20, default="")
+    scene: str = models.CharField(max_length=20, default="0")
     # @Julian added player info
     position: str = models.CharField(max_length=100, default="")
     # @Vyno string to save, which collectables have been collected
