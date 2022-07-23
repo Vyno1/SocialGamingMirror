@@ -129,7 +129,7 @@ def use_level_token(request) -> HttpResponse:
         # host_token_table = get_token_table(match.host)
         # host_success = use_token(host_token_table, token_id)
 
-        if match_success:  # and host_success:
+        if match_success:
             return HttpResponse(success_message)
         return HttpResponse(failed_message + ": token removal failed")
 
@@ -139,7 +139,7 @@ def use_level_token(request) -> HttpResponse:
     # joined_token_table = get_token_table(match.joined_player)
     # joined_success = use_token(joined_token_table, token_id)
 
-    if match_success:  # and joined_success:
+    if match_success:
         return HttpResponse(success_message)
     return HttpResponse(failed_message)
 
@@ -184,6 +184,30 @@ def set_level_current_to_token(match: Match, state: WeatherState) -> bool:
 
 # ----------------------------------------------{ remove token from player }--------------------------------------------
 
+
+def remove_player_tokens(request):
+    match: Match = get_match(request)
+
+    if not match:
+        return HttpResponse(failed_message + ": no match")
+
+    # get weather token tables of the players and remove the stored tokens
+    host: Player = match.host
+    joined: Player = match.joined_player
+    host_table = get_token_table(host)
+    joined_table = get_token_table(joined)
+
+    host_id: int = int(request.POST['t_host'])
+    joined_id: int = int(request.POST['t_join'])
+
+    host_success: bool = use_token(host_table, host_id)
+    joined_success: bool = use_token(joined_table, joined_id)
+
+    if host_success and joined_success:
+        return HttpResponse(success_message)
+    return HttpResponse(failed_message + ": removing tokens went wrong")
+
+
 def use_token(wt: WeatherTokens, token_id: int) -> bool:
     if token_id == 0:
         wt.token0 = WeatherState.none
@@ -198,4 +222,5 @@ def use_token(wt: WeatherTokens, token_id: int) -> bool:
     if token_id == 5:
         wt.used_shared = True
 
+    # if id was -1 nothing happens because no tokens were used
     return True

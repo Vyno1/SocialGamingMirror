@@ -66,6 +66,7 @@ urlpatterns = [
     path('use_weather_token/', levelweather.use_level_token),
     path('get_level_tokens/', levelweather.get_level_tokens),
     path('set_level_tokens/', levelweather.set_level_tokens),
+    path('remove_player_tokens/', levelweather.remove_player_tokens),
 
     #
     # --------------------------------------------{Game State Stuff}---------------------------------------------------#
