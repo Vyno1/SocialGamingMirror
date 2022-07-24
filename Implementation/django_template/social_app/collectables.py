@@ -53,11 +53,11 @@ def update_collection(request):
         return HttpResponse(f'user is not a player')
     level_number: int = int(request.POST['levelNumber'])
     player: Player = request.user.player
+    # check if user is host or not, so only the host gets the collectable reward
     if isHostHelper(player):
         collection: str = player.collection
         player.collection = collection[:level_number - 1] + '1' + collection[level_number:]
         player.number_collected += 1
-        print(collection)
         match: Match = request.user.player.host.all()[0]
         match.level_collectable_already_collected = True
         match.save()
@@ -71,9 +71,9 @@ def update_collection(request):
         match: Match = request.user.player.joined.all()[0]
         match.level_collectable_already_collected = True
         match.save()
-        print(collection)
         host.save()
         return HttpResponse(f'0: Updated collection for host')
+
 
 def getCollectables(request) -> HttpResponse:
     if not request.user.is_authenticated:
