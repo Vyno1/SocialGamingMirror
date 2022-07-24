@@ -32,6 +32,8 @@ class Player(models.Model):
     collection: str = models.CharField(max_length=20, default="0000000000")
     # @Vyno number of collected collectibles
     number_collected: int = models.IntegerField(default=0)
+    # @Robin Gps-Coordinates for walk2Gether
+    coordinates: str = models.CharField(max_length=30, default="0")
 
     def __str__(self):
         return self.user.username
@@ -139,6 +141,32 @@ class InviteMatch(models.Model):
         relation = "<-->"
         return f'{self.Inviter.user.username} {relation} {self.invited_player.user.username}'
 
+class Walk2Gether(models.Model):
+    # The host is mostly used as an identifier so that players can find the
+    # match they have hosted or joined.
+    player1 = models.ForeignKey(
+        Player,
+        on_delete=models.CASCADE,
+        related_name='playerOne',
+    )
+
+    player2 = models.ForeignKey(
+        Player,
+        on_delete=models.CASCADE,
+        related_name='playerTwo',
+    )
+
+    accepted = models.BooleanField(default=False)
+    started = models.BooleanField(default=False)
+    isAlone = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('player1', 'player2')
+
+    def __str__(self):
+        relation = "<-->"
+        return f'{self.player1.user.username} {relation} {self.player2.user.username}'
+
 
 class Friendship(models.Model):
     # Because both these foreign keys are players, they need to be
@@ -161,7 +189,7 @@ class Friendship(models.Model):
     mutual = models.BooleanField(default=False)
 
     # Der Char an der Stelle i represented, ob Skin i schon freigeschaltet wurde als bool
-    skins_unlocked = models.CharField(default="0000000000", max_length=10)
+    skins_unlocked = models.CharField(default="100000000", max_length=10)
     skin_drop_chance = models.FloatField(default=0.05)
     step_multiplier = models.FloatField(default=1.0)
 

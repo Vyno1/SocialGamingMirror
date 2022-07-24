@@ -214,4 +214,21 @@ def get_mutualfriends(request) -> HttpResponse:
     response = response[:-1]
     return HttpResponse(response) if response != '0: ' else HttpResponse('1: No Friends...')
 
+def get_mutualfriendsWithCoords(request) -> HttpResponse:
+    if not request.user.is_authenticated:
+        return HttpResponse(f'user not signed in')
+    if not hasattr(request.user, 'player'):
+        return HttpResponse(f'user is not a player')
+    response = '0: '
+    for friendship in request.user.player.friends.all():
+        friend: Player = friendship.player2
+        if friendship.mutual and friend.user.is_authenticated:
+            response += f'{friendship.player2.user.username}|{friend.coordinates},'
+    for friendship in request.user.player.followers.all():
+        friend: Player = friendship.player1
+        if friendship.mutual and friend.user.is_authenticated:
+            response += f'{friendship.player1.user.username}|{friend.coordinates},'
+    response = response[:-1]
+    return HttpResponse(response) if response != '0: ' else HttpResponse('1: No Friends...')
+
 # ------------------------------------------------{End of File :)}--------------------------------------------------- #
