@@ -70,12 +70,12 @@ def inviteFriendWalk(request) -> HttpResponse:
     player = request.user.player
     friend_name = request.POST['name']
     friend = Player.objects.get(user__username=friend_name)
-
+    print(friend.coordinates)
     if friend.coordinates == "0":
         # friend not in stepScene
         return HttpResponse(f'1:')
     else:
-        Walk2Gether(player1=Player, player2=friend).save()
+        Walk2Gether(player1=player, player2=friend).save()
         return HttpResponse(f'0:')
 
 def checkIfInvitedWalk(request) -> HttpResponse:
@@ -104,8 +104,12 @@ def acceptInviteWalk(request) -> HttpResponse:
         match : Walk2Gether = Walk2Gether.objects.get(player2=player)
         match.accepted = True
         match.save()
-        friendShip = Friendship.objects.get(player1=match.player1)
-        multiplier = friendShip.step_multiplier
+        try:
+            friendShip = Friendship.objects.get(player1=match.player1)
+            multiplier = friendShip.step_multiplier
+        except ObjectDoesNotExist:
+            friendShip = Friendship.objects.get(player2=match.player1)
+            multiplier = friendShip.step_multiplier
         return HttpResponse(f'0:' + f'{multiplier}')
     except ObjectDoesNotExist:
         return HttpResponse(f'1:')
@@ -150,14 +154,22 @@ def checkAnswerWalk(request) -> HttpResponse:
 
     try:
         match: Walk2Gether = Walk2Gether.objects.get(player1=player)
-        friendShip = Friendship.objects.get(player1=match.player2)
-        multiplier = friendShip.step_multiplier
+        try:
+            friendShip = Friendship.objects.get(player1=match.player2)
+            multiplier = friendShip.step_multiplier
+        except ObjectDoesNotExist:
+            friendShip = Friendship.objects.get(player2=match.player2)
+            multiplier = friendShip.step_multiplier
         if match.accepted:
             return HttpResponse(f'0:' + f'{multiplier}')
         else:
             return HttpResponse(f'1:')
     except ObjectDoesNotExist:
-        return HttpResponse(f'2:')
+        try:
+            match: Walk2Gether = Walk2Gether.objects.get(player2=player)
+            return HttpResponse(f'1:')
+        except ObjectDoesNotExist:
+            return HttpResponse(f'2:')
 
 def goBack(request) -> HttpResponse:
     if not request.user.is_authenticated:
@@ -194,7 +206,7 @@ def leaveWalk(request) -> HttpResponse:
             return HttpResponse(f'2:')
 
 
-def checkIfAlone(request) -> HttpResponse:
+def checkIfAloneWalk(request) -> HttpResponse:
     if not request.user.is_authenticated:
         return HttpResponse(f'user not signed in')
     if not hasattr(request.user, 'player'):
