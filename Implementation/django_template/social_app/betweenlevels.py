@@ -162,6 +162,7 @@ def exit_level(request):
     friend: Player = match.joined_player if player_is_host else match.host
 
     match.has_started = False
+    match.is_paused = False
     match.other_player_quit = True
     match.friendship_is_updated = False
     match.guest_ready = False

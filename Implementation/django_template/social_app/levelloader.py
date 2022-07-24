@@ -1,6 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from .models import Player
+from . import levelweather
 
 
 # @Vyno
@@ -72,6 +73,8 @@ def subtract_steps(request):
     spent_steps: int = int(request.POST['stepsSpent'])
     player = request.user.player
     if player.steps >= spent_steps:
+        if not levelweather.remove_player_tokens(request):
+            print("Removal of tokens failed. -------------------------------------------------------")
         player.steps -= spent_steps
         player.save()
         return HttpResponse(f'0: Steps have been deducted')

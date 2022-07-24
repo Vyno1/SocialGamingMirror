@@ -14,6 +14,8 @@ def check_if_already_collected_host(request):
         return HttpResponse(f'user is not a player')
     level_number: int = int(request.POST['levelNumber'])
     player: Player = request.user.player
+    if player.host.all().count() != 1:
+        return HttpResponse("Nonono")
     match: Match = request.user.player.host.all()[0]
     collected: str = player.collection
     if collected[level_number - 1] == '1':

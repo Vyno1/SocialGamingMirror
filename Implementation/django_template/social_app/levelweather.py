@@ -225,9 +225,8 @@ def remove_player_tokens(request):
     host_success: bool = use_token(host_table, host_id)
     joined_success: bool = use_token(joined_table, joined_id)
 
-    if host_success and joined_success:
-        return HttpResponse(success_message)
-    return HttpResponse(failed_message + ": removing tokens went wrong")
+    return host_success and joined_success
+
 
 
 def use_token(wt: WeatherTokens, token_id: int) -> bool:
