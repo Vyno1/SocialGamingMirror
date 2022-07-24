@@ -29,7 +29,7 @@ class Player(models.Model):
     # @Julian added player info
     position: str = models.CharField(max_length=100, default="")
     # @Vyno string to save, which collectables have been collected
-    collection: str = models.CharField(max_length=20, default="0")
+    collection: str = models.CharField(max_length=20, default="0000000000")
     # @Vyno number of collected collectibles
     number_collected: int = models.IntegerField(default=0)
 
