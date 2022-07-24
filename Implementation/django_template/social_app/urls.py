@@ -144,7 +144,7 @@ urlpatterns = [
     path('checkAnswerWalk/', steps.checkAnswerWalk),
     path('goBack/', steps.goBack),
     path('leaveWalk/', steps.leaveWalk),
-    path('checkIfAlone/', steps.checkIfAlone),
+    path('checkIfAloneWalk/', steps.checkIfAloneWalk),
 
     # --------------------------------------------{Gravity Object Stuff}-----------------------------------------------#
     # @Vyno
