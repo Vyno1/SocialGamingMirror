@@ -42,7 +42,7 @@ def get_level_tokens(request) -> HttpResponse:
     t_host = match.host_token
     t_joined = match.joined_token
 
-    resp: str = str(t_host) + "#" + str(t_joined)
+    resp: str = t_host + "#" + t_joined
     print("Anfrage level tokens, returned " + resp)
 
     return HttpResponse(resp)
@@ -56,8 +56,8 @@ def set_level_tokens(request) -> HttpResponse:
 
     match.host_token = request.POST['t_host']
     match.joined_token = request.POST['t_join']
-    # match.host_token_id = request.POST['t_host_id']
-    # match.joined_token_id = request.POST['t_join_id']
+    match.host_token_id = int(request.POST['t_host_id'])
+    match.joined_token_id = int(request.POST['t_join_id'])
 
     if request.POST['t_host'] == "none":
         match.host_token_id = -1
@@ -65,7 +65,9 @@ def set_level_tokens(request) -> HttpResponse:
     if request.POST['t_join'] == "none":
         match.joined_token_id = -1
 
-    print("set level tokens, got hosttoken: " + request.POST['t_host'] + " and joined: " + request.POST['t_join'])
+    match.save()
+    print("set level tokens, got host: " + request.POST['t_host'] + " and joined: " + request.POST['t_join'])
+    print("set level tokens, got host_id: " + request.POST['t_host_id'] + " and joined_id: " + request.POST['t_join_id'])
 
     return HttpResponse(success_message)
 
@@ -132,7 +134,7 @@ def set_joined_token(request) -> HttpResponse:
 
 def use_level_token(request) -> HttpResponse:
     match: Match = get_match(request)
-    token_id: int = request.POST['id']
+    # token_id: int = request.POST['id']
 
     print("use token, isHostToken == " + request.POST['is_host_token'])
 
@@ -143,14 +145,18 @@ def use_level_token(request) -> HttpResponse:
         match_success = use_host_token(match)
 
         if match_success:
+            print("The use of host token worked!")
             return HttpResponse(success_message)
+        print("The use of host token did NOT work!")
         return HttpResponse(failed_message + ": token removal failed")
 
     # else is joined player
     match_success = use_joined_token(match)
 
     if match_success:
+        print("The use of joined token worked!")
         return HttpResponse(success_message)
+    print("The use of host token did NOT work!")
     return HttpResponse(failed_message)
 
 
@@ -160,6 +166,8 @@ def use_host_token(match: Match) -> bool:
     host_token_state = string_2_weatherstate(match.host_token)
     if host_token_state == "none":
         return False
+
+    print(f"Used host token {host_token_state} in match!")
 
     set_level_current_to_token(match, host_token_state)
 
@@ -176,6 +184,9 @@ def use_joined_token(match: Match) -> bool:
     if joined_token_state == "none":
         return False
 
+    print(f"Used join token {joined_token_state} in match!")
+
+
     set_level_current_to_token(match, joined_token_state)
 
     # reset tokens to default
@@ -187,6 +198,7 @@ def use_joined_token(match: Match) -> bool:
 
 
 def set_level_current_to_token(match: Match, state: WeatherState) -> bool:
+    print(f"set current to {state}")
     match.current_weather = state
     match.save()
     return True
