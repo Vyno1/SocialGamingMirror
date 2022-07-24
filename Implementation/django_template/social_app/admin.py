@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Player, Friendship, Match, WeatherTokens, WaitingList, InviteMatch
+from .models import Player, Friendship, Match, WeatherTokens, WaitingList, InviteMatch, Walk2Gether
 
 # All this does is add these tables to the admin site, where you can view
 # and add entries table entries for testing purposes.
@@ -12,3 +12,4 @@ admin.site.register(Match)
 admin.site.register(WeatherTokens)
 admin.site.register(WaitingList)
 admin.site.register(InviteMatch)
+admin.site.register(Walk2Gether)

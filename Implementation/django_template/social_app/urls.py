@@ -1,5 +1,6 @@
 from django.urls import path
 
+
 from . import views, pause, friends, weather, gamestate, levelloader, invite, lobby, betweenlevels, steps, \
     gravity_manager, collectables, exit_and_time, playerSync, ingame_button, levelweather
 
@@ -40,12 +41,14 @@ urlpatterns = [
     path('update_friendship_level/', friends.update_friendship_level),
     # @Robin urls for invite and skinselect
     path('get_mutualfriends/', friends.get_mutualfriends),
+    path('get_mutualfriendsWithCoords/', friends.get_mutualfriendsWithCoords),
     # ...
 
     #
     # --------------------------------------------{Pause Menu Stuff}---------------------------------------------------#
     #  @Kerstin urls for pause menu [source: pause.py]
     path('pause_game/', pause.pause_game),
+    path('get_paused/', pause.get_paused),
     path('resume_game/', pause.resume_game),
     path('get_paused/', pause.get_paused),
 
@@ -131,6 +134,18 @@ urlpatterns = [
     # -----------------------------------------------------{Utls for steps]-----------------------------
     # @Robin
     path('getSteps/', steps.getSteps),
+    path('setSteps/', steps.setSteps),
+    path('sendCoords/', steps.sendCoords),
+    path('getFriendSteps/' , steps.getFriendSteps),
+    path('inviteFriendWalk/', steps.inviteFriendWalk),
+    path('checkIfInvitedWalk/', steps.checkIfInvitedWalk),
+    path('acceptInviteWalk/', steps.acceptInviteWalk),
+    path('declineInviteWalk/', steps.declineInviteWalk),
+    path('cancelWalk/', steps.cancelWalk),
+    path('checkAnswerWalk/', steps.checkAnswerWalk),
+    path('goBack/', steps.goBack),
+    path('leaveWalk/', steps.leaveWalk),
+    path('checkIfAlone/', steps.checkIfAlone),
 
     # --------------------------------------------{Gravity Object Stuff}-----------------------------------------------#
     # @Vyno
@@ -144,6 +159,7 @@ urlpatterns = [
     path('checkIfColHost/', collectables.check_if_already_collected_host),
     path('checkIfColJoin/', collectables.check_if_already_collected_joined),
     path('updateCol/', collectables.update_collection),
+    path('getCollectables/', collectables.getCollectables),
     # --------------------------------------------{Ingame Button Stuff}------------------------------------------------#
     # @Vyno
     path('sendButtonUpdate/', ingame_button.update_object_state),
