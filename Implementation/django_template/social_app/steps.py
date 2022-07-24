@@ -70,12 +70,12 @@ def inviteFriendWalk(request) -> HttpResponse:
     player = request.user.player
     friend_name = request.POST['name']
     friend = Player.objects.get(user__username=friend_name)
-
+    print(friend.coordinates)
     if friend.coordinates == "0":
         # friend not in stepScene
         return HttpResponse(f'1:')
     else:
-        Walk2Gether(player1=Player, player2=friend).save()
+        Walk2Gether(player1=player, player2=friend).save()
         return HttpResponse(f'0:')
 
 def checkIfInvitedWalk(request) -> HttpResponse:
