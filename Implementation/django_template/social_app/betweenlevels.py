@@ -27,7 +27,8 @@ def increase_levels_unlocked(request):
         return HttpResponse(f'user is not a player')
 
     player = request.user.player
-    player.levels_unlocked += 1 if player.levels_unlocked < int(request.POST["max_level"]) else 0
+    is_hardest_level: bool = player.levels_unlocked == int(request.POST["level_played"].split("_")[1])
+    player.levels_unlocked += 1 if player.levels_unlocked < int(request.POST["max_level"]) and is_hardest_level else 0
     player.save()
 
     return HttpResponse(f"0: {player.levels_unlocked}")
