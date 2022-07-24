@@ -30,7 +30,7 @@ def handle_quit(request):
     player.scene = "DisconnectedMenu"
     player.save()
 
-    return HttpResponse(f"0: Handled timout of other player, current scene is now: {player.scene}")
+    return HttpResponse(f"0: Other player quit, current scene is now: {player.scene}")
 
 
 # @Maxi
@@ -43,6 +43,9 @@ def set_quit(request):
         return HttpResponse(f'user is not a player')
 
     player: Player = request.user.player
+    if player.host.all().count() != 1 and player.joined.all().count() != 1:
+        return HttpResponse(f"1: No match that needs to be handled found.")
+
     match: Match = player.host.first() if player.host.all().count() == 1 else player.joined.first()
     match.other_player_closed_game = True
     match.save()
